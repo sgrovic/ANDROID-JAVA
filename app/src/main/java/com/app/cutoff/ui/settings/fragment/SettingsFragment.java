@@ -1,10 +1,14 @@
 package com.app.cutoff.ui.settings.fragment;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -20,18 +24,38 @@ import com.app.cutoff.utils.CurrencyUtils;
 import com.app.cutoff.utils.ThemeManager;
 import com.app.cutoff.utils.ValidationUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * Screen 8: Settings. Shows current theme (tap to change — a simple
  * picker dialog reusing the same theme options as onboarding), a link
- * into Fixed Bills management (screen 9), and a read-only salary summary
- * with a link to edit it.
+ * into Fixed Bills management (screen 9), a read-only salary summary
+ * with a link to edit it, and export/import of the whole database as a
+ * JSON backup file.
  */
 @AndroidEntryPoint
 public class SettingsFragment extends Fragment {
 
     private SettingsViewModel viewModel;
+
+    // Registered as fields (not inside onViewCreated) so they're set up
+    // before the Fragment reaches STARTED, per the ActivityResultLauncher
+    // contract -- see AndroidX docs on registerForActivityResult().
+    private final ActivityResultLauncher<String> exportLauncher = registerForActivityResult(
+            new ActivityResultContracts.CreateDocument("application/json"),
+            uri -> {
+                if (uri != null) viewModel.exportData(uri);
+            });
+
+    private final ActivityResultLauncher<String[]> importLauncher = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            uri -> {
+                if (uri != null) confirmAndImport(uri);
+            });
 
     public SettingsFragment() {
         super(R.layout.fragment_settings);
@@ -68,6 +92,33 @@ public class SettingsFragment extends Fragment {
                 NavHostFragment.findNavController(this).navigate(R.id.action_settings_to_fixedBills));
 
         view.findViewById(R.id.row_salary).setOnClickListener(v -> showEditSalaryDialog(latestSalary[0]));
+
+        view.findViewById(R.id.row_export_data).setOnClickListener(v ->
+                exportLauncher.launch(suggestedBackupFileName()));
+
+        view.findViewById(R.id.row_import_data).setOnClickListener(v ->
+                importLauncher.launch(new String[]{"application/json"}));
+
+        viewModel.getBackupStatusMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void confirmAndImport(Uri source) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.title_confirm_import)
+                .setMessage(R.string.message_confirm_import)
+                .setPositiveButton(R.string.action_import, (dialogInterface, which) ->
+                        viewModel.importData(source))
+                .setNegativeButton(R.string.action_cancel, null)
+                .show();
+    }
+
+    private String suggestedBackupFileName() {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
+        return "cutoff_backup_" + date + ".json";
     }
 
     private void showEditSalaryDialog(@Nullable SalaryEntity currentSalary) {

@@ -50,4 +50,12 @@ public interface BillDao {
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM bill WHERE cutoffId = :cutoffId AND type = 'INCENTIVE'")
     LiveData<Double> observeTotalIncentivesForCutoff(long cutoffId);
+
+    // ---- Backup export/import (BackupRepository) ----
+
+    @Query("SELECT * FROM bill")
+    List<BillEntity> getAllBillsSync();
+
+    @Query("DELETE FROM bill")
+    void deleteAllBills();
 }

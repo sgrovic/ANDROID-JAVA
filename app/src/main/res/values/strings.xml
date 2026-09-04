@@ -17,6 +17,13 @@
     <string name="title_edit_bill">Edit bill</string>
     <string name="title_edit_salary">Edit salary</string>
     <string name="title_choose_theme">Choose theme</string>
+    <string name="title_export_data">Export data</string>
+    <string name="subtitle_export_data">Save a backup file</string>
+    <string name="title_import_data">Import data</string>
+    <string name="subtitle_import_data">Restore from a backup file</string>
+    <string name="title_confirm_import">Import data</string>
+    <string name="message_confirm_import">This replaces all current bills, cutoffs, and salary with the contents of this file. This can\'t be undone.</string>
+    <string name="action_import">Import</string>
 
     <plurals name="days_left">
         <item quantity="one">%d day left</item>

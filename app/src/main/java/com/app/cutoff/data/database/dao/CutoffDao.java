@@ -47,4 +47,12 @@ public interface CutoffDao {
             "WHERE c.periodEndEpochDay < :todayEpochDay " +
             "GROUP BY c.id ORDER BY c.periodStartEpochDay DESC")
     LiveData<List<CutoffSummary>> observePastCutoffSummaries(long todayEpochDay);
+
+    // ---- Backup export/import (BackupRepository) ----
+
+    @Query("SELECT * FROM cutoff")
+    List<CutoffEntity> getAllCutoffsSync();
+
+    @Query("DELETE FROM cutoff")
+    void deleteAllCutoffs();
 }

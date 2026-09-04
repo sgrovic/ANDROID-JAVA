@@ -56,6 +56,12 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.7.7'
     implementation 'androidx.navigation:navigation-ui:2.7.7'
 
+    // Explicit versions (rather than relying on whatever navigation-fragment
+    // pulls in transitively) for registerForActivityResult, used by the
+    // Settings > export/import data file pickers.
+    implementation 'androidx.fragment:fragment:1.7.1'
+    implementation 'androidx.activity:activity:1.9.0'
+
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
 
