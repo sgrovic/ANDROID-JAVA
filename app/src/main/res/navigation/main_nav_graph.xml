@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.app.cutoff.ui.home.fragment.HomeFragment"
+        android:label="Home">
+        <action
+            android:id="@+id/action_home_to_cutoffDetail"
+            app:destination="@id/cutoffDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.app.cutoff.ui.settings.fragment.SettingsFragment"
+        android:label="Settings">
+        <action
+            android:id="@+id/action_settings_to_fixedBills"
+            app:destination="@id/billsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cutoffDetailFragment"
+        android:name="com.app.cutoff.ui.cutoff.fragment.CutoffDetailFragment"
+        android:label="Cutoff detail">
+        <argument
+            android:name="arg_cutoff_id"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/billsFragment"
+        android:name="com.app.cutoff.ui.bills.fragment.BillsFragment"
+        android:label="Fixed bills" />
+
+</navigation>

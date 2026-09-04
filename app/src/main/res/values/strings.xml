@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cutoff</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="action_add">Add</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+
+    <string name="title_add_fixed_bill">Add fixed bill</string>
+    <string name="title_add_variable_bill">Add variable bill</string>
+    <string name="title_add_incentive">Add incentive</string>
+    <string name="title_edit_bill">Edit bill</string>
+    <string name="title_edit_salary">Edit salary</string>
+    <string name="title_choose_theme">Choose theme</string>
+
+    <plurals name="days_left">
+        <item quantity="one">%d day left</item>
+        <item quantity="other">%d days left</item>
+    </plurals>
+</resources>

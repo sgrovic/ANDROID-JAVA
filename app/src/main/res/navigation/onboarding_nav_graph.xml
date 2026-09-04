@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/onboarding_nav_graph"
+    app:startDestination="@id/welcomeFragment">
+
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.app.cutoff.ui.onboarding.fragment.WelcomeFragment"
+        android:label="Welcome">
+        <action
+            android:id="@+id/action_welcome_to_salary"
+            app:destination="@id/salaryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/salaryFragment"
+        android:name="com.app.cutoff.ui.onboarding.fragment.SalaryFragment"
+        android:label="Set salary">
+        <action
+            android:id="@+id/action_salary_to_theme"
+            app:destination="@id/themeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/themeFragment"
+        android:name="com.app.cutoff.ui.onboarding.fragment.ThemeFragment"
+        android:label="Choose theme">
+        <action
+            android:id="@+id/action_theme_to_fixedBills"
+            app:destination="@id/fixedBillsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fixedBillsFragment"
+        android:name="com.app.cutoff.ui.onboarding.fragment.FixedBillsFragment"
+        android:label="Set fixed bills">
+        <action
+            android:id="@+id/action_fixedBills_to_allSet"
+            app:destination="@id/finishFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/finishFragment"
+        android:name="com.app.cutoff.ui.onboarding.fragment.FinishFragment"
+        android:label="All set" />
+
+</navigation>
