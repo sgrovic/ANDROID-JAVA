@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.cutoff.R;
 import com.app.cutoff.ui.onboarding.model.OnboardingState;
 import com.app.cutoff.utils.CurrencyUtils;
+import com.app.cutoff.utils.BankGradientUtils;
 
 import java.util.List;
 
@@ -47,6 +48,8 @@ public class OnboardingFixedBillAdapter extends RecyclerView.Adapter<OnboardingF
         OnboardingState.DraftFixedBill draft = drafts.get(position);
         holder.name.setText(draft.name);
         holder.amount.setText(CurrencyUtils.format(draft.amount));
+        holder.bank.setText(draft.bank);
+        BankGradientUtils.apply(holder.itemView, holder.name, holder.amount, holder.bank, holder.removeButton, draft.bank);
         holder.removeButton.setOnClickListener(v -> onRemoveListener.onRemove(draft));
     }
 
@@ -58,12 +61,14 @@ public class OnboardingFixedBillAdapter extends RecyclerView.Adapter<OnboardingF
     static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name;
         final TextView amount;
+        final TextView bank;
         final View removeButton;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.text_bill_name);
             amount = itemView.findViewById(R.id.text_bill_amount);
+            bank = itemView.findViewById(R.id.text_bill_bank);
             removeButton = itemView.findViewById(R.id.button_remove_bill);
         }
     }

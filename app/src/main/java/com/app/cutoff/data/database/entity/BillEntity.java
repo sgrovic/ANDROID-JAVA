@@ -51,6 +51,10 @@ public class BillEntity {
     private String name;
     private double amount;
 
+    // Bank / wallet used to pay this bill. Existing and newly created bills default to BDO.
+    @Nullable
+    private String bank;
+
     @Nullable
     private String iconKey; // e.g. "grocery", "parking" — null for variable/incentive rows
 
@@ -70,6 +74,7 @@ public class BillEntity {
     private boolean paid;     // snapshots/variable: whether the user marked it paid
     private int sortOrder;
 
+    @androidx.room.Ignore
     public BillEntity(String type, String name, double amount, @Nullable String iconKey,
                        boolean isTemplate, @Nullable Long cutoffId, @Nullable Long sourceBillId,
                        boolean active, boolean paid, int sortOrder) {
@@ -83,6 +88,24 @@ public class BillEntity {
         this.active = active;
         this.paid = paid;
         this.sortOrder = sortOrder;
+        this.bank = com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK;
+    }
+
+    public BillEntity(String type, String name, double amount, @Nullable String iconKey,
+                       boolean isTemplate, @Nullable Long cutoffId, @Nullable Long sourceBillId,
+                       boolean active, boolean paid, int sortOrder, String bank) {
+        this(type, name, amount, iconKey, isTemplate, cutoffId, sourceBillId, active, paid, sortOrder);
+        this.bank = (bank == null || bank.trim().isEmpty())
+                ? com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK : bank;
+    }
+
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = (bank == null || bank.trim().isEmpty())
+                ? com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK : bank;
     }
 
     public long getId() {

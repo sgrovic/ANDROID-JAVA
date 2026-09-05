@@ -26,6 +26,10 @@ public class AddBillUseCase {
      * @return null on success, or an error message to show the user.
      */
     public String execute(long cutoffId, Kind kind, String name, String rawAmount) {
+        return execute(cutoffId, kind, name, rawAmount, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public String execute(long cutoffId, Kind kind, String name, String rawAmount, String bank) {
         if (!ValidationUtils.isNonEmpty(name)) {
             return "Name is required";
         }
@@ -35,9 +39,9 @@ public class AddBillUseCase {
 
         double amount = Double.parseDouble(rawAmount);
         if (kind == Kind.VARIABLE) {
-            billRepository.addVariableBill(cutoffId, name.trim(), amount);
+            billRepository.addVariableBill(cutoffId, name.trim(), amount, bank);
         } else if (kind == Kind.FIXED) {
-            billRepository.addFixedBillToCutoff(cutoffId, name.trim(), amount);
+            billRepository.addFixedBillToCutoff(cutoffId, name.trim(), amount, bank);
         } else {
             billRepository.addIncentive(cutoffId, name.trim(), amount);
         }

@@ -145,15 +145,15 @@ public class CutoffDetailFragment extends Fragment {
 
         view.findViewById(R.id.button_add_fixed_bill).setOnClickListener(v -> {
             AddBillDialog dialog = AddBillDialog.newInstance(AddBillDialog.Mode.FIXED_BILL);
-            dialog.setOnBillAddedListener((name, amount, iconKey) ->
-                    viewModel.addFixedBill(name, String.valueOf(amount)));
+            dialog.setOnBillAddedListener((name, amount, iconKey, bank) ->
+                    viewModel.addFixedBill(name, String.valueOf(amount), bank));
             dialog.show(getChildFragmentManager(), "add_fixed_bill");
         });
 
         view.findViewById(R.id.button_add_variable_bill).setOnClickListener(v -> {
             AddBillDialog dialog = AddBillDialog.newInstance(AddBillDialog.Mode.VARIABLE_BILL);
-            dialog.setOnBillAddedListener((name, amount, iconKey) ->
-                    viewModel.addVariableBill(name, String.valueOf(amount)));
+            dialog.setOnBillAddedListener((name, amount, iconKey, bank) ->
+                    viewModel.addVariableBill(name, String.valueOf(amount), bank));
             dialog.show(getChildFragmentManager(), "add_variable_bill");
         });
 
@@ -170,8 +170,8 @@ public class CutoffDetailFragment extends Fragment {
 
     /** Shared edit flow for fixed bills, variable bills, and incentives alike. */
     private void openEditBillDialog(BillEntity bill) {
-        EditBillDialog dialog = EditBillDialog.newInstance(bill.getId(), bill.getName(), bill.getAmount());
-        dialog.setOnBillEditedListener((name, amount) -> {
+        EditBillDialog dialog = EditBillDialog.newInstance(bill.getId(), bill.getName(), bill.getAmount(), bill.getBank());
+        dialog.setOnBillEditedListener((name, amount, bank) -> {
             // IMPORTANT: don't mutate `bill` in place — it's the exact instance the
             // adapter's ListAdapter is still holding in its current submitted list.
             // If we edit it directly, DiffUtil.areContentsTheSame() ends up comparing
@@ -183,7 +183,7 @@ public class CutoffDetailFragment extends Fragment {
             BillEntity updated = new BillEntity(
                     bill.getType(), name, amount, bill.getIconKey(), bill.isTemplate(),
                     bill.getCutoffId(), bill.getSourceBillId(), bill.isActive(), bill.isPaid(),
-                    bill.getSortOrder());
+                    bill.getSortOrder(), bank);
             updated.setId(bill.getId());
             viewModel.updateBill(updated);
         });

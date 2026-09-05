@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.cutoff.R;
 import com.app.cutoff.data.database.entity.BillEntity;
 import com.app.cutoff.utils.CurrencyUtils;
+import com.app.cutoff.utils.BankGradientUtils;
 
 /**
  * Screen 9: Fixed bills management. Shows every FixedBillEntity template
@@ -46,7 +47,8 @@ public class BillsAdapter extends ListAdapter<BillEntity, BillsAdapter.ViewHolde
                 public boolean areContentsTheSame(@NonNull BillEntity oldItem, @NonNull BillEntity newItem) {
                     return oldItem.getName().equals(newItem.getName())
                             && oldItem.getAmount() == newItem.getAmount()
-                            && oldItem.isActive() == newItem.isActive();
+                            && oldItem.isActive() == newItem.isActive()
+                            && java.util.Objects.equals(oldItem.getBank(), newItem.getBank());
                 }
             };
 
@@ -63,6 +65,8 @@ public class BillsAdapter extends ListAdapter<BillEntity, BillsAdapter.ViewHolde
         BillEntity template = getItem(position);
         holder.name.setText(template.getName());
         holder.amount.setText(CurrencyUtils.format(template.getAmount()));
+        holder.bank.setText(template.getBank());
+        BankGradientUtils.apply(holder.cardBackground, holder.name, holder.amount, holder.bank, holder.menuButton, template.getBank());
         holder.menuButton.setOnClickListener(v -> showMenu(v, template));
     }
 
@@ -87,13 +91,17 @@ public class BillsAdapter extends ListAdapter<BillEntity, BillsAdapter.ViewHolde
     static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name;
         final TextView amount;
+        final TextView bank;
         final View menuButton;
+        final View cardBackground;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.text_bill_name);
             amount = itemView.findViewById(R.id.text_bill_amount);
+            bank = itemView.findViewById(R.id.text_bill_bank);
             menuButton = itemView.findViewById(R.id.button_bill_menu);
+            cardBackground = itemView.findViewById(R.id.bill_card_background);
         }
     }
 }

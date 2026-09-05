@@ -15,6 +15,7 @@ public class Bill {
     private final Type type;
     private final String name;
     private final double amount;
+    private final String bank;
     private final String iconKey;
     private final boolean template;
     private final Long cutoffId;
@@ -25,10 +26,18 @@ public class Bill {
 
     public Bill(long id, Type type, String name, double amount, String iconKey, boolean template,
                 Long cutoffId, Long sourceBillId, boolean active, boolean paid, int sortOrder) {
+        this(id, type, name, amount, iconKey, template, cutoffId, sourceBillId, active, paid, sortOrder,
+                com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public Bill(long id, Type type, String name, double amount, String iconKey, boolean template,
+                Long cutoffId, Long sourceBillId, boolean active, boolean paid, int sortOrder, String bank) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.amount = amount;
+        this.bank = (bank == null || bank.trim().isEmpty())
+                ? com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK : bank;
         this.iconKey = iconKey;
         this.template = template;
         this.cutoffId = cutoffId;
@@ -52,6 +61,10 @@ public class Bill {
 
     public double getAmount() {
         return amount;
+    }
+
+    public String getBank() {
+        return bank;
     }
 
     public String getIconKey() {

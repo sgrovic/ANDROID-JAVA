@@ -43,6 +43,15 @@ public class BillRepository {
         return billDao.insert(template);
     }
 
+
+    public long addFixedBillTemplate(String name, double amount, String iconKey, int sortOrder, String bank) {
+        BillEntity template = new BillEntity(
+                BillEntity.TYPE_FIXED, name, amount, iconKey,
+                /*isTemplate=*/ true, /*cutoffId=*/ null, /*sourceBillId=*/ null,
+                /*active=*/ true, /*paid=*/ false, sortOrder, bank);
+        return billDao.insert(template);
+    }
+
     public void updateFixedBillTemplate(BillEntity template) {
         billDao.update(template);
     }
@@ -74,19 +83,27 @@ public class BillRepository {
     }
 
     public void addVariableBill(long cutoffId, String name, double amount) {
+        addVariableBill(cutoffId, name, amount, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addVariableBill(long cutoffId, String name, double amount, String bank) {
         BillEntity bill = new BillEntity(
                 BillEntity.TYPE_VARIABLE, name, amount, /*iconKey=*/ null,
                 /*isTemplate=*/ false, cutoffId, /*sourceBillId=*/ null,
-                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0);
+                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0, bank);
         billDao.insert(bill);
     }
 
     /** A one-off fixed bill added directly to a cutoff (not backed by a template). */
     public void addFixedBillToCutoff(long cutoffId, String name, double amount) {
+        addFixedBillToCutoff(cutoffId, name, amount, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addFixedBillToCutoff(long cutoffId, String name, double amount, String bank) {
         BillEntity bill = new BillEntity(
                 BillEntity.TYPE_FIXED, name, amount, /*iconKey=*/ null,
                 /*isTemplate=*/ false, cutoffId, /*sourceBillId=*/ null,
-                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0);
+                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0, bank);
         billDao.insert(bill);
     }
 
@@ -117,7 +134,7 @@ public class BillRepository {
             BillEntity snapshot = new BillEntity(
                     BillEntity.TYPE_FIXED, template.getName(), template.getAmount(),
                     template.getIconKey(), /*isTemplate=*/ false, cutoffId, template.getId(),
-                    /*active=*/ true, /*paid=*/ false, template.getSortOrder());
+                    /*active=*/ true, /*paid=*/ false, template.getSortOrder(), template.getBank());
             billDao.insert(snapshot);
         }
     }

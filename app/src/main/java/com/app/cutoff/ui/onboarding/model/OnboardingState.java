@@ -16,11 +16,18 @@ public class OnboardingState {
         public String name;
         public double amount;
         public String iconKey;
+        public String bank;
 
         public DraftFixedBill(String name, double amount, String iconKey) {
+            this(name, amount, iconKey, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+        }
+
+        public DraftFixedBill(String name, double amount, String iconKey, String bank) {
             this.name = name;
             this.amount = amount;
             this.iconKey = iconKey;
+            this.bank = (bank == null || bank.trim().isEmpty())
+                    ? com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK : bank;
         }
     }
 

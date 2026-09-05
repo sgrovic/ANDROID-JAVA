@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.cutoff.R;
 import com.app.cutoff.data.database.entity.BillEntity;
 import com.app.cutoff.utils.CurrencyUtils;
+import com.app.cutoff.utils.BankGradientUtils;
 
 /** Renders the "Variable bills" section rows in Cutoff Detail. */
 public class VariableBillAdapter extends ListAdapter<BillEntity, VariableBillAdapter.ViewHolder> {
@@ -40,7 +41,8 @@ public class VariableBillAdapter extends ListAdapter<BillEntity, VariableBillAda
                 @Override
                 public boolean areContentsTheSame(@NonNull BillEntity oldItem, @NonNull BillEntity newItem) {
                     return oldItem.getName().equals(newItem.getName())
-                            && oldItem.getAmount() == newItem.getAmount();
+                            && oldItem.getAmount() == newItem.getAmount()
+                            && oldItem.getBank().equals(newItem.getBank());
                 }
             };
 
@@ -57,6 +59,8 @@ public class VariableBillAdapter extends ListAdapter<BillEntity, VariableBillAda
         BillEntity bill = getItem(position);
         holder.name.setText(bill.getName());
         holder.amount.setText(CurrencyUtils.format(bill.getAmount()));
+        holder.bank.setText(bill.getBank());
+        BankGradientUtils.apply(holder.itemView, holder.name, holder.amount, holder.bank, holder.menuButton, bill.getBank());
         holder.menuButton.setOnClickListener(v -> showBillMenu(v, bill));
     }
 
@@ -81,12 +85,14 @@ public class VariableBillAdapter extends ListAdapter<BillEntity, VariableBillAda
     static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name;
         final TextView amount;
+        final TextView bank;
         final View menuButton;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.text_bill_name);
             amount = itemView.findViewById(R.id.text_bill_amount);
+            bank = itemView.findViewById(R.id.text_bill_bank);
             menuButton = itemView.findViewById(R.id.button_bill_menu);
         }
     }

@@ -4,6 +4,10 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+
+import com.app.cutoff.utils.Constants;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +31,7 @@ public class AddBillDialog extends DialogFragment {
     public enum Mode {FIXED_BILL_TEMPLATE, FIXED_BILL, VARIABLE_BILL}
 
     public interface OnBillAddedListener {
-        void onBillAdded(String name, double amount, @Nullable String iconKey);
+        void onBillAdded(String name, double amount, @Nullable String iconKey, String bank);
     }
 
     private static final String ARG_MODE = "arg_mode";
@@ -54,6 +58,13 @@ public class AddBillDialog extends DialogFragment {
         View content = getLayoutInflater().inflate(R.layout.dialog_add_bill, null);
         EditText inputName = content.findViewById(R.id.input_bill_name);
         EditText inputAmount = content.findViewById(R.id.input_bill_amount);
+        Spinner inputBank = content.findViewById(R.id.input_bill_bank);
+        ArrayAdapter<String> bankAdapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, Constants.BILL_BANKS);
+        bankAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        inputBank.setAdapter(bankAdapter);
+        inputBank.setSelection(java.util.Arrays.asList(Constants.BILL_BANKS)
+                .indexOf(Constants.DEFAULT_BILL_BANK));
 
         int titleRes = (mode == Mode.FIXED_BILL_TEMPLATE || mode == Mode.FIXED_BILL)
                 ? R.string.title_add_fixed_bill
@@ -71,7 +82,7 @@ public class AddBillDialog extends DialogFragment {
                     }
 
                     if (listener != null) {
-                        listener.onBillAdded(name, Double.parseDouble(rawAmount), /*iconKey=*/ null);
+                        listener.onBillAdded(name, Double.parseDouble(rawAmount), /*iconKey=*/ null, inputBank.getSelectedItem().toString());
                     }
                 })
                 .setNegativeButton(R.string.action_cancel, null)
