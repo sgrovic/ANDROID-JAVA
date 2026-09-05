@@ -34,6 +34,18 @@ public interface BillDao {
     @Query("SELECT * FROM bill WHERE type = 'FIXED' AND isTemplate = 1 AND active = 1 ORDER BY sortOrder ASC")
     List<BillEntity> getActiveFixedBillTemplatesSync();
 
+    // Future cutoff snapshots linked to a recurring template. These are used
+    // when Settings > Fixed Bills changes so already-created upcoming cutoffs
+    // stay in sync with the template. Past/current cutoffs are never touched.
+    @Query("SELECT b.* FROM bill b INNER JOIN cutoff c ON b.cutoffId = c.id " +
+            "WHERE b.type = 'FIXED' AND b.isTemplate = 0 AND b.sourceBillId = :sourceBillId " +
+            "AND c.periodStartEpochDay > :todayEpochDay ORDER BY c.periodStartEpochDay ASC")
+    List<BillEntity> getFutureFixedSnapshotsForTemplateSync(long sourceBillId, long todayEpochDay);
+
+    @Query("DELETE FROM bill WHERE type = 'FIXED' AND isTemplate = 0 AND sourceBillId = :sourceBillId " +
+            "AND cutoffId IN (SELECT id FROM cutoff WHERE periodStartEpochDay > :todayEpochDay)")
+    void deleteFutureFixedSnapshotsForTemplate(long sourceBillId, long todayEpochDay);
+
     // ---- Rows belonging to a specific cutoff (fixed snapshots + variable + incentives) ----
 
     @Query("SELECT * FROM bill WHERE cutoffId = :cutoffId AND type = 'FIXED' ORDER BY sortOrder ASC")

@@ -31,6 +31,9 @@ public interface CutoffDao {
     @Query("SELECT * FROM cutoff WHERE id = :id")
     CutoffEntity getCutoffSync(long id);
 
+    @Query("SELECT * FROM cutoff WHERE periodStartEpochDay > :todayEpochDay ORDER BY periodStartEpochDay ASC")
+    List<CutoffEntity> getFutureCutoffsSync(long todayEpochDay);
+
     @Query("SELECT * FROM cutoff ORDER BY periodStartEpochDay DESC")
     LiveData<List<CutoffEntity>> observeAllCutoffsDesc();
 

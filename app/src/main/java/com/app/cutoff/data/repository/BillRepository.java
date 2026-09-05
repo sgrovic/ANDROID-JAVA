@@ -3,9 +3,12 @@ package com.app.cutoff.data.repository;
 import androidx.lifecycle.LiveData;
 
 import com.app.cutoff.data.database.dao.BillDao;
+import com.app.cutoff.data.database.dao.CutoffDao;
+import com.app.cutoff.data.database.entity.CutoffEntity;
 import com.app.cutoff.data.database.entity.BillEntity;
 
 import java.util.List;
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,10 +22,12 @@ import javax.inject.Singleton;
 public class BillRepository {
 
     private final BillDao billDao;
+    private final CutoffDao cutoffDao;
 
     @Inject
-    public BillRepository(BillDao billDao) {
+    public BillRepository(BillDao billDao, CutoffDao cutoffDao) {
         this.billDao = billDao;
+        this.cutoffDao = cutoffDao;
     }
 
     // ---- Fixed bill templates (Settings > Fixed bills management) ----
@@ -43,11 +48,46 @@ public class BillRepository {
         return billDao.insert(template);
     }
 
+
+    public long addFixedBillTemplate(String name, double amount, String iconKey, int sortOrder, String bank) {
+        BillEntity template = new BillEntity(
+                BillEntity.TYPE_FIXED, name, amount, iconKey,
+                /*isTemplate=*/ true, /*cutoffId=*/ null, /*sourceBillId=*/ null,
+                /*active=*/ true, /*paid=*/ false, sortOrder, bank);
+        long templateId = billDao.insert(template);
+        template.setId(templateId);
+
+        // If upcoming cutoffs were already opened/generated, add the new
+        // recurring bill to those cutoffs too. The current and past cutoffs
+        // remain historical snapshots and are never changed.
+        copyTemplateIntoFutureCutoffs(template);
+        return templateId;
+    }
+
     public void updateFixedBillTemplate(BillEntity template) {
         billDao.update(template);
+
+        // Keep already-created upcoming cutoffs synchronized with Settings.
+        // Current/past snapshots remain untouched so historical records and
+        // current-period planning are preserved.
+        long todayEpochDay = LocalDate.now().toEpochDay();
+        List<BillEntity> snapshots = billDao.getFutureFixedSnapshotsForTemplateSync(
+                template.getId(), todayEpochDay);
+        for (BillEntity snapshot : snapshots) {
+            snapshot.setName(template.getName());
+            snapshot.setAmount(template.getAmount());
+            snapshot.setIconKey(template.getIconKey());
+            snapshot.setBank(template.getBank());
+            snapshot.setSortOrder(template.getSortOrder());
+            billDao.update(snapshot);
+        }
     }
 
     public void deleteFixedBillTemplate(BillEntity template) {
+        // Remove this recurring bill from already-created upcoming cutoffs,
+        // but leave current/past snapshots untouched as historical records.
+        billDao.deleteFutureFixedSnapshotsForTemplate(
+                template.getId(), LocalDate.now().toEpochDay());
         billDao.delete(template);
     }
 
@@ -74,19 +114,27 @@ public class BillRepository {
     }
 
     public void addVariableBill(long cutoffId, String name, double amount) {
+        addVariableBill(cutoffId, name, amount, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addVariableBill(long cutoffId, String name, double amount, String bank) {
         BillEntity bill = new BillEntity(
                 BillEntity.TYPE_VARIABLE, name, amount, /*iconKey=*/ null,
                 /*isTemplate=*/ false, cutoffId, /*sourceBillId=*/ null,
-                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0);
+                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0, bank);
         billDao.insert(bill);
     }
 
     /** A one-off fixed bill added directly to a cutoff (not backed by a template). */
     public void addFixedBillToCutoff(long cutoffId, String name, double amount) {
+        addFixedBillToCutoff(cutoffId, name, amount, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addFixedBillToCutoff(long cutoffId, String name, double amount, String bank) {
         BillEntity bill = new BillEntity(
                 BillEntity.TYPE_FIXED, name, amount, /*iconKey=*/ null,
                 /*isTemplate=*/ false, cutoffId, /*sourceBillId=*/ null,
-                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0);
+                /*active=*/ true, /*paid=*/ false, /*sortOrder=*/ 0, bank);
         billDao.insert(bill);
     }
 
@@ -111,13 +159,49 @@ public class BillRepository {
      * newly created cutoff. Called only by CutoffRepository at cutoff
      * generation time.
      */
+    /**
+     * Adds a recurring template to every already-created future cutoff.
+     * This is intentionally separate from copyActiveTemplatesIntoCutoff(),
+     * which handles a single newly-created cutoff.
+     */
+    private void copyTemplateIntoFutureCutoffs(BillEntity template) {
+        long todayEpochDay = LocalDate.now().toEpochDay();
+        List<CutoffEntity> futureCutoffs = cutoffDao.getFutureCutoffsSync(todayEpochDay);
+
+        // Load existing snapshots once instead of querying once per cutoff.
+        List<BillEntity> existing = billDao.getFutureFixedSnapshotsForTemplateSync(
+                template.getId(), todayEpochDay);
+
+        for (CutoffEntity cutoff : futureCutoffs) {
+            // Do not create a duplicate if this template is already present
+            // in the future cutoff. This can happen when a cutoff was created
+            // after the template was added and the app is syncing again.
+            boolean alreadyExists = false;
+            for (BillEntity snapshot : existing) {
+                if (snapshot.getCutoffId() != null && snapshot.getCutoffId() == cutoff.getId()) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (!alreadyExists) {
+                BillEntity snapshot = new BillEntity(
+                        BillEntity.TYPE_FIXED, template.getName(), template.getAmount(),
+                        template.getIconKey(), /*isTemplate=*/ false, cutoff.getId(),
+                        template.getId(), /*active=*/ true, /*paid=*/ false,
+                        template.getSortOrder(), template.getBank());
+                billDao.insert(snapshot);
+            }
+        }
+    }
+
     void copyActiveTemplatesIntoCutoff(long cutoffId) {
         List<BillEntity> templates = billDao.getActiveFixedBillTemplatesSync();
         for (BillEntity template : templates) {
             BillEntity snapshot = new BillEntity(
                     BillEntity.TYPE_FIXED, template.getName(), template.getAmount(),
                     template.getIconKey(), /*isTemplate=*/ false, cutoffId, template.getId(),
-                    /*active=*/ true, /*paid=*/ false, template.getSortOrder());
+                    /*active=*/ true, /*paid=*/ false, template.getSortOrder(), template.getBank());
             billDao.insert(snapshot);
         }
     }

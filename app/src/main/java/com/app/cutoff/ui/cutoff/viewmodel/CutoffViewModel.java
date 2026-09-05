@@ -95,8 +95,12 @@ public class CutoffViewModel extends ViewModel {
 
     /** Called from AddBillDialog for a variable bill. */
     public void addVariableBill(String name, String rawAmount) {
+        addVariableBill(name, rawAmount, Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addVariableBill(String name, String rawAmount, String bank) {
         ioExecutor.execute(() -> {
-            String error = addBillUseCase.execute(cutoffId, AddBillUseCase.Kind.VARIABLE, name, rawAmount);
+            String error = addBillUseCase.execute(cutoffId, AddBillUseCase.Kind.VARIABLE, name, rawAmount, bank);
             if (error != null) errorMessage.postValue(error);
         });
     }
@@ -111,8 +115,12 @@ public class CutoffViewModel extends ViewModel {
 
     /** Called from AddBillDialog for a one-off fixed bill added directly to this cutoff. */
     public void addFixedBill(String name, String rawAmount) {
+        addFixedBill(name, rawAmount, Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addFixedBill(String name, String rawAmount, String bank) {
         ioExecutor.execute(() -> {
-            String error = addBillUseCase.execute(cutoffId, AddBillUseCase.Kind.FIXED, name, rawAmount);
+            String error = addBillUseCase.execute(cutoffId, AddBillUseCase.Kind.FIXED, name, rawAmount, bank);
             if (error != null) errorMessage.postValue(error);
         });
     }

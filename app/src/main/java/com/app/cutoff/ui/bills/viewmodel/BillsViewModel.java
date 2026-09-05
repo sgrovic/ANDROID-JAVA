@@ -45,7 +45,7 @@ public class BillsViewModel extends ViewModel {
         return errorMessage;
     }
 
-    public void addFixedBillTemplate(String name, String rawAmount, String iconKey, int sortOrder) {
+    public void addFixedBillTemplate(String name, String rawAmount, String iconKey, int sortOrder, String bank) {
         if (!ValidationUtils.isNonEmpty(name)) {
             errorMessage.setValue("Name is required");
             return;
@@ -55,7 +55,7 @@ public class BillsViewModel extends ViewModel {
             return;
         }
         ioExecutor.execute(() ->
-                billRepository.addFixedBillTemplate(name.trim(), Double.parseDouble(rawAmount), iconKey, sortOrder));
+                billRepository.addFixedBillTemplate(name.trim(), Double.parseDouble(rawAmount), iconKey, sortOrder, bank));
     }
 
     public void updateFixedBillTemplate(BillEntity template) {

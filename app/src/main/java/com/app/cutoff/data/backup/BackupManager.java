@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public final class BackupManager {
 
-    public static final int CURRENT_VERSION = 1;
+    public static final int CURRENT_VERSION = 2;
 
     private static final String KEY_VERSION = "version";
     private static final String KEY_EXPORTED_AT = "exportedAtEpochMillis";
@@ -43,6 +43,7 @@ public final class BackupManager {
     private static final String KEY_BILL_TYPE = "type";
     private static final String KEY_BILL_NAME = "name";
     private static final String KEY_BILL_AMOUNT = "amount";
+    private static final String KEY_BILL_BANK = "bank";
     private static final String KEY_BILL_ICON_KEY = "iconKey";
     private static final String KEY_BILL_ACTIVE = "active";
     private static final String KEY_BILL_PAID = "paid";
@@ -118,6 +119,7 @@ public final class BackupManager {
         json.put(KEY_BILL_TYPE, bill.getType());
         json.put(KEY_BILL_NAME, bill.getName());
         json.put(KEY_BILL_AMOUNT, bill.getAmount());
+        json.put(KEY_BILL_BANK, bill.getBank());
         json.put(KEY_BILL_ICON_KEY, bill.getIconKey());
         json.put(KEY_BILL_ACTIVE, bill.isActive());
         json.put(KEY_BILL_PAID, bill.isPaid());
@@ -135,7 +137,7 @@ public final class BackupManager {
             JSONObject root = new JSONObject(jsonText);
 
             int version = root.optInt(KEY_VERSION, -1);
-            if (version != CURRENT_VERSION) {
+            if (version < 1 || version > CURRENT_VERSION) {
                 throw new BackupFormatException(
                         "This backup file is from an unsupported version (" + version + ").");
             }
@@ -194,6 +196,7 @@ public final class BackupManager {
         Long sourceBillId = json.has(KEY_BILL_SOURCE_BILL_ID)
                 ? json.getLong(KEY_BILL_SOURCE_BILL_ID) : null;
         String iconKey = json.isNull(KEY_BILL_ICON_KEY) ? null : json.optString(KEY_BILL_ICON_KEY, null);
+        String bank = json.optString(KEY_BILL_BANK, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
 
         BillEntity bill = new BillEntity(
                 json.getString(KEY_BILL_TYPE),
@@ -205,7 +208,7 @@ public final class BackupManager {
                 sourceBillId,
                 json.optBoolean(KEY_BILL_ACTIVE, false),
                 json.optBoolean(KEY_BILL_PAID, false),
-                json.optInt(KEY_BILL_SORT_ORDER, 0));
+                json.optInt(KEY_BILL_SORT_ORDER, 0), bank);
         bill.setId(json.getLong(KEY_BILL_ID));
         return bill;
     }

@@ -9,6 +9,12 @@ public final class Constants {
     public static final String ARG_CUTOFF_ID = "arg_cutoff_id";
     public static final String ARG_BILL_ID = "arg_bill_id";
 
+    // Banks / wallets available for bill payments.
+    public static final String DEFAULT_BILL_BANK = "BDO";
+    public static final String[] BILL_BANKS = {
+            "UNIONBANK", "BDO", "MARIBANK", "METROBANK", "GOTYME", "GCASH", "MAYA"
+    };
+
     // Icon keys used for fixed bills (map to drawables in the UI layer)
     public static final String ICON_GROCERY = "grocery";
     public static final String ICON_PARENT = "parent";

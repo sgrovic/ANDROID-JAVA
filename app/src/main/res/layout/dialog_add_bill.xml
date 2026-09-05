@@ -11,6 +11,12 @@
         android:layout_height="wrap_content"
         android:hint="Name" />
 
+    <Spinner
+        android:id="@+id/input_bill_bank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
     <EditText
         android:id="@+id/input_bill_amount"
         android:layout_width="match_parent"

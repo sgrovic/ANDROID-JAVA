@@ -82,7 +82,11 @@ public class OnboardingViewModel extends ViewModel {
     }
 
     public void addFixedBill(String name, double amount, String iconKey) {
-        state.addDraftFixedBill(new OnboardingState.DraftFixedBill(name, amount, iconKey));
+        addFixedBill(name, amount, iconKey, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
+    }
+
+    public void addFixedBill(String name, double amount, String iconKey, String bank) {
+        state.addDraftFixedBill(new OnboardingState.DraftFixedBill(name, amount, iconKey, bank));
     }
 
     public void removeFixedBill(OnboardingState.DraftFixedBill bill) {
@@ -118,7 +122,7 @@ public class OnboardingViewModel extends ViewModel {
                 state.getDraftFixedBills().clear();
                 for (BillEntity template : payload.fixedBillTemplates) {
                     state.addDraftFixedBill(new OnboardingState.DraftFixedBill(
-                            template.getName(), template.getAmount(), template.getIconKey()));
+                            template.getName(), template.getAmount(), template.getIconKey(), template.getBank()));
                 }
 
                 state.setImported(true);
@@ -147,7 +151,7 @@ public class OnboardingViewModel extends ViewModel {
 
             int sortOrder = 0;
             for (OnboardingState.DraftFixedBill draft : state.getDraftFixedBills()) {
-                billRepository.addFixedBillTemplate(draft.name, draft.amount, draft.iconKey, sortOrder++);
+                billRepository.addFixedBillTemplate(draft.name, draft.amount, draft.iconKey, sortOrder++, draft.bank);
             }
 
             settingsRepository.setOnboardingComplete(true);
