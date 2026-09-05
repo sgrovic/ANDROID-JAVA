@@ -9,7 +9,16 @@
         android:name="com.app.cutoff.ui.onboarding.fragment.WelcomeFragment"
         android:label="Welcome">
         <action
-            android:id="@+id/action_welcome_to_salary"
+            android:id="@+id/action_welcome_to_importPrompt"
+            app:destination="@id/importPromptFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/importPromptFragment"
+        android:name="com.app.cutoff.ui.onboarding.fragment.ImportPromptFragment"
+        android:label="Import data">
+        <action
+            android:id="@+id/action_importPrompt_to_salary"
             app:destination="@id/salaryFragment" />
     </fragment>
 

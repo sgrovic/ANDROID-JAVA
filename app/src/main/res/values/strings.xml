@@ -24,6 +24,11 @@
     <string name="title_confirm_import">Import data</string>
     <string name="message_confirm_import">This replaces all current bills, cutoffs, and salary with the contents of this file. This can\'t be undone.</string>
     <string name="action_import">Import</string>
+    <string name="title_import_prompt">Import your data?</string>
+    <string name="message_import_prompt">If you have a Cutoff backup file, we can restore your salary and fixed bills now.</string>
+    <string name="action_import_from_file">Import from file</string>
+    <string name="action_skip_import">Skip, I\'ll set up manually</string>
+    <string name="label_prefilled_from_import">Prefilled from your import</string>
 
     <plurals name="days_left">
         <item quantity="one">%d day left</item>

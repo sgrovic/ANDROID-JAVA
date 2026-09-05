@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -17,6 +18,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="These repeat every cutoff. Add variable bills later." />
+
+    <TextView
+        android:id="@+id/text_import_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="3 bills imported" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_fixed_bills"
@@ -51,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Next" />
+            android:text="Finish" />
     </LinearLayout>
 
 </LinearLayout>

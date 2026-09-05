@@ -73,6 +73,17 @@ public class BackupRepository {
     }
 
     /**
+     * Reads and parses a backup file without touching the database. Used by
+     * onboarding's import step, which only needs to preview the salary and
+     * fixed-bill values into OnboardingState -- everything is committed
+     * together later, when the user taps "Go to home".
+     */
+    public BackupManager.BackupPayload parseOnly(Uri source) throws IOException, BackupFormatException {
+        String json = readAll(source);
+        return BackupManager.fromJson(json);
+    }
+
+    /**
      * Wipes all bills, cutoffs, and salary data and replaces it with the
      * contents of the given backup file, inside a single transaction so a
      * mid-import failure can't leave the database half-replaced.

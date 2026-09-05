@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Carries the user's in-progress selections across the 5 onboarding
- * screens (Welcome -> Salary -> Theme -> Fixed bills -> Finish) before
- * anything is committed to the database on the final step.
+ * Carries the user's in-progress selections across the 6 onboarding
+ * screens (Welcome -> Import -> Salary -> Theme -> Fixed bills -> Finish)
+ * before anything is committed to the database on the final step. Theme
+ * is the exception -- it's persisted as soon as it's picked so it can be
+ * previewed live; see OnboardingViewModel.setThemeMode().
  */
 public class OnboardingState {
 
@@ -25,6 +27,7 @@ public class OnboardingState {
     private double firstToFifteenth;
     private double sixteenthToEnd;
     private String themeMode;
+    private boolean imported;
     private final List<DraftFixedBill> draftFixedBills = new ArrayList<>();
 
     public double getFirstToFifteenth() {
@@ -49,6 +52,15 @@ public class OnboardingState {
 
     public void setThemeMode(String themeMode) {
         this.themeMode = themeMode;
+    }
+
+    /** True once the user has pulled salary/fixed-bill values from a backup file on the import step. */
+    public boolean isImported() {
+        return imported;
+    }
+
+    public void setImported(boolean imported) {
+        this.imported = imported;
     }
 
     public List<DraftFixedBill> getDraftFixedBills() {

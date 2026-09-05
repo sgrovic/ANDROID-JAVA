@@ -15,13 +15,19 @@ import com.app.cutoff.R;
 import com.app.cutoff.data.preference.ThemePreference;
 import com.app.cutoff.ui.onboarding.adapter.ThemeAdapter;
 import com.app.cutoff.ui.onboarding.viewmodel.OnboardingViewModel;
+import com.app.cutoff.utils.ThemeManager;
 
 import java.util.Arrays;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Screen 3: Choose theme. */
+/**
+ * Screen 4: Choose theme. Selecting an option applies it immediately
+ * (ThemeManager.applyNightMode + Activity.recreate()), the same live-
+ * preview pattern SettingsFragment uses post-onboarding, rather than only
+ * taking effect once onboarding finishes.
+ */
 @AndroidEntryPoint
 public class ThemeFragment extends Fragment {
 
@@ -44,8 +50,16 @@ public class ThemeFragment extends Fragment {
                 new ThemeAdapter.ThemeOption(ThemePreference.MODE_SLATE, "Slate", R.drawable.preview_theme_slate)
         );
 
-        ThemeAdapter adapter = new ThemeAdapter(options, viewModel.getState().getThemeMode(),
-                viewModel::setThemeMode);
+        ThemeAdapter adapter = new ThemeAdapter(options, viewModel.getState().getThemeMode(), mode -> {
+            boolean changed = viewModel.setThemeMode(mode);
+            if (changed) {
+                // Must happen before recreate(): setTheme() alone isn't enough to
+                // pick up Sage/Slate's overlay style, and OnboardingActivity reads
+                // the (now-persisted) preference back in its onCreate().
+                ThemeManager.applyNightMode(mode);
+                requireActivity().recreate();
+            }
+        });
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_theme_options);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

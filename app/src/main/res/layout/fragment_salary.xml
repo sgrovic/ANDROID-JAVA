@@ -19,6 +19,17 @@
         android:text="Enter the amount you receive each cutoff." />
 
     <TextView
+        android:id="@+id/text_import_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/label_prefilled_from_import"
+        android:textColor="?attr/colorPrimary"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

@@ -15,7 +15,7 @@ import com.app.cutoff.ui.onboarding.viewmodel.OnboardingViewModel;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
- * Screen 5: All set. "Go to home" triggers OnboardingViewModel to persist
+ * Screen 6: All set. "Go to home" triggers OnboardingViewModel to persist
  * everything (salary, theme, fixed bill templates), then — once
  * getOnboardingComplete() fires true — hands off to OnboardingActivity to
  * start MainActivity.

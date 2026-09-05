@@ -14,7 +14,7 @@ import com.app.cutoff.R;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Screen 1: Welcome. "Get started" advances to SalaryFragment. */
+/** Screen 1: Welcome. "Get started" advances to the import-data prompt. */
 @AndroidEntryPoint
 public class WelcomeFragment extends Fragment {
 
@@ -28,7 +28,7 @@ public class WelcomeFragment extends Fragment {
 
         view.findViewById(R.id.button_get_started).setOnClickListener(v ->
                 NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_welcome_to_salary));
+                        .navigate(R.id.action_welcome_to_importPrompt));
 
         // "What's a cutoff?" — informational, could open a bottom sheet or dialog.
         view.findViewById(R.id.button_what_is_cutoff).setOnClickListener(v -> {
