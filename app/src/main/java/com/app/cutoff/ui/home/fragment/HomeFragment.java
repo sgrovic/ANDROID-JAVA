@@ -58,6 +58,7 @@ public class HomeFragment extends Fragment {
         TextView remainingValue = view.findViewById(R.id.text_remaining_value);
         ProgressBar spendingProgress = view.findViewById(R.id.progress_spending);
         TextView spendingPercentLabel = view.findViewById(R.id.text_spending_percent);
+        TextView summaryRemaining = view.findViewById(R.id.text_summary_remaining);
         View upcomingCutoffCard = view.findViewById(R.id.card_upcoming_cutoff);
 
         RecyclerView pastCutoffsList = view.findViewById(R.id.recycler_past_cutoffs);
@@ -74,11 +75,13 @@ public class HomeFragment extends Fragment {
                                 navigationManager.toCutoffDetail(cutoffId))));
         upcomingCutoffsList.setAdapter(upcomingCutoffAdapter);
 
-        TextView seeMoreUpcoming = view.findViewById(R.id.text_see_more_upcoming);
-        seeMoreUpcoming.setOnClickListener(v -> {
-            boolean expanded = !upcomingCutoffAdapter.isExpanded();
-            upcomingCutoffAdapter.setExpanded(expanded);
-            seeMoreUpcoming.setText(expanded ? "See less" : "See more");
+        com.google.android.material.button.MaterialButtonToggleGroup tabs = view.findViewById(R.id.cutoff_tabs);
+        tabs.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            boolean past = checkedId == R.id.tab_past;
+            pastCutoffsList.setVisibility(past ? View.VISIBLE : View.GONE);
+            upcomingCutoffsList.setVisibility(past ? View.GONE : View.VISIBLE);
+            view.findViewById(R.id.text_past_empty).setVisibility(past && historyAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
         });
 
         // Track the latest known values from each source and recompute on every change.
@@ -94,6 +97,7 @@ public class HomeFragment extends Fragment {
 
             double remaining = latestSalary[0] + latestIncentives[0] - latestExpenses[0];
             remainingValue.setText(CurrencyUtils.format(remaining));
+            summaryRemaining.setText(CurrencyUtils.format(remaining));
 
             double totalAvailable = latestSalary[0] + latestIncentives[0];
             salaryValue.setText(CurrencyUtils.format(totalAvailable));
@@ -102,7 +106,7 @@ public class HomeFragment extends Fragment {
                     ? (int) Math.min(100, Math.max(0, Math.round((latestExpenses[0] / totalAvailable) * 100)))
                     : 0;
             spendingProgress.setProgress(percent);
-            spendingPercentLabel.setText(percent + "%");
+            spendingPercentLabel.setText(percent + "% of income allocated to bills");
         };
 
         viewModel.getCurrentCutoff().observe(getViewLifecycleOwner(), cutoff -> {
@@ -115,9 +119,6 @@ public class HomeFragment extends Fragment {
             LocalDate currentPeriodEnd = LocalDate.ofEpochDay(cutoff.getPeriodEndEpochDay());
             upcomingCutoffAdapter.submitList(
                     DateUtils.upcomingPeriodEndsThroughYearEnd(currentPeriodEnd));
-            seeMoreUpcoming.setVisibility(
-                    upcomingCutoffAdapter.hasMore() ? View.VISIBLE : View.GONE);
-            seeMoreUpcoming.setText("See more");
         });
 
         viewModel.getCurrentCutoffExpenses().observe(getViewLifecycleOwner(), expenses -> {
@@ -130,7 +131,11 @@ public class HomeFragment extends Fragment {
             updateTotals.run();
         });
 
-        viewModel.getPastCutoffs().observe(getViewLifecycleOwner(), historyAdapter::submitList);
+        viewModel.getPastCutoffs().observe(getViewLifecycleOwner(), cutoffs -> {
+            historyAdapter.submitList(cutoffs);
+            view.findViewById(R.id.text_past_empty).setVisibility(
+                    tabs.getCheckedButtonId() == R.id.tab_past && (cutoffs == null || cutoffs.isEmpty()) ? View.VISIBLE : View.GONE);
+        });
     }
 
     private void bindCurrentCutoffHeader(CutoffEntity cutoff, TextView cutoffLabel, TextView daysLeft,
@@ -138,7 +143,9 @@ public class HomeFragment extends Fragment {
         LocalDate periodEnd = LocalDate.ofEpochDay(cutoff.getPeriodEndEpochDay());
         LocalDate today = LocalDate.now();
 
-        cutoffLabel.setText(periodEnd.format(DateTimeFormatter.ofPattern("MMMM d")));
+        cutoffLabel.setText(LocalDate.ofEpochDay(cutoff.getPeriodStartEpochDay())
+                .format(DateTimeFormatter.ofPattern("MMM d")) + "–"
+                + periodEnd.format(DateTimeFormatter.ofPattern("d, yyyy")));
         long remainingDays = Math.max(0, java.time.temporal.ChronoUnit.DAYS.between(today, periodEnd));
         daysLeft.setText(getResources().getQuantityString(
                 R.plurals.days_left, (int) remainingDays, remainingDays));

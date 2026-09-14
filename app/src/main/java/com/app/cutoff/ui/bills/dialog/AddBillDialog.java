@@ -70,8 +70,10 @@ public class AddBillDialog extends DialogFragment {
                 ? R.string.title_add_fixed_bill
                 : R.string.title_add_variable_bill;
 
-        return new AlertDialog.Builder(requireContext())
-                .setTitle(titleRes)
+        return new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
+                .setTitle(mode == Mode.FIXED_BILL_TEMPLATE ? "New bill template" : getString(titleRes))
+                .setMessage(mode == Mode.FIXED_BILL_TEMPLATE
+                        ? R.string.sheet_template_scope : R.string.sheet_cutoff_scope)
                 .setView(content)
                 .setPositiveButton(R.string.action_add, (dialogInterface, which) -> {
                     String name = inputName.getText().toString().trim();

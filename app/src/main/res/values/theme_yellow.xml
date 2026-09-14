@@ -1,0 +1,14 @@
+<resources>
+    <style name="Theme.Cutoff.Yellow" parent="Theme.Cutoff">
+        <item name="colorPrimary">#756000</item>
+        <item name="colorPrimaryVariant">#584800</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#756000</item>
+        <item name="android:colorBackground">#FFF8DE</item>
+        <item name="colorSurface">#FFFCF0</item>
+        <item name="colorOnSurface">#292511</item>
+        <item name="cutoffSoftSurface">#F6E6A4</item>
+        <item name="cutoffOutline">#DACE99</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

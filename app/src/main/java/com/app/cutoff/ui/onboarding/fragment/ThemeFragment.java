@@ -47,7 +47,8 @@ public class ThemeFragment extends Fragment {
                 new ThemeAdapter.ThemeOption(ThemePreference.MODE_LIGHT, "Light", R.drawable.preview_theme_light),
                 new ThemeAdapter.ThemeOption(ThemePreference.MODE_DARK, "Dark", R.drawable.preview_theme_dark),
                 new ThemeAdapter.ThemeOption(ThemePreference.MODE_SAGE, "Sage", R.drawable.preview_theme_sage),
-                new ThemeAdapter.ThemeOption(ThemePreference.MODE_SLATE, "Slate", R.drawable.preview_theme_slate)
+                new ThemeAdapter.ThemeOption(ThemePreference.MODE_SLATE, "Slate", R.drawable.preview_theme_slate),
+                new ThemeAdapter.ThemeOption(ThemePreference.MODE_YELLOW, "Yellow", R.drawable.preview_theme_yellow)
         );
 
         ThemeAdapter adapter = new ThemeAdapter(options, viewModel.getState().getThemeMode(), mode -> {

@@ -43,7 +43,7 @@ public class AddIncentiveDialog extends DialogFragment {
         EditText inputName = content.findViewById(R.id.input_incentive_name);
         EditText inputAmount = content.findViewById(R.id.input_incentive_amount);
 
-        return new AlertDialog.Builder(requireContext())
+        return new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
                 .setTitle(R.string.title_add_incentive)
                 .setView(content)
                 .setPositiveButton(R.string.action_add, (dialogInterface, which) -> {

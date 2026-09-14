@@ -1,41 +1,73 @@
 package com.app.cutoff.utils;
 
 import android.content.Context;
-import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-/**
- * Provides the visual identity for bill cards based on the payment bank/wallet.
- * No bank logos are used; the bank is represented by a subtle three-stop gradient.
- */
+import com.app.cutoff.R;
+import com.google.android.material.color.MaterialColors;
+
+import java.util.Locale;
+
+/** Applies a consistent logo and 30%-wide bank gradient to every bill row. */
 public final class BankGradientUtils {
+
+    private static final float GRADIENT_END = 0.70f;
 
     private BankGradientUtils() {
     }
 
     public static void apply(View card, TextView name, TextView amount, TextView bank,
                              View actionButton, String bankName) {
-        boolean dark = isDarkTheme(card.getContext());
-        int[] colors = getGradientColors(bankName, dark);
-        GradientDrawable drawable = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT, colors);
-        drawable.setCornerRadius(dp(card.getContext(), 12));
-        card.setBackground(drawable);
+        BankStyle style = BankStyle.forName(bankName);
+        int surfaceColor = MaterialColors.getColor(
+                card, com.google.android.material.R.attr.colorSurface);
+        int contentColor = MaterialColors.getColor(
+                card, com.google.android.material.R.attr.colorOnSurface);
 
-        int textColor = getTextColor(bankName, dark);
-        name.setTextColor(textColor);
-        amount.setTextColor(textColor);
-        bank.setTextColor(textColor);
+        card.setBackground(new BankRowDrawable(
+                surfaceColor, style.gradientColor, dp(card.getContext(), 16), GRADIENT_END));
+        name.setTextColor(contentColor);
+        amount.setTextColor(contentColor);
+        bank.setTextColor(contentColor);
+
+        TextView logo = card.findViewById(R.id.text_bank_logo);
+        if (logo != null) {
+            logo.setText(style.logoText);
+            logo.setTextColor(style.logoTextColor);
+            logo.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.logoTextSizeSp);
+            logo.setLetterSpacing(style.letterSpacing);
+
+            GradientDrawable logoBackground = new GradientDrawable();
+            logoBackground.setColor(style.logoBackgroundColor);
+            logoBackground.setCornerRadius(dp(card.getContext(), 12));
+            logo.setBackground(logoBackground);
+        }
+
+        card.setContentDescription(name.getText() + ", " + amount.getText()
+                + ", pay with " + normalize(bankName));
 
         if (actionButton instanceof ImageButton) {
-            ((ImageButton) actionButton).setColorFilter(textColor);
-            actionButton.setAlpha(0.65f);
+            ((ImageButton) actionButton).setColorFilter(contentColor);
+            actionButton.setAlpha(0.72f);
         }
     }
 
@@ -44,63 +76,118 @@ public final class BankGradientUtils {
         apply(card, name, amount, bank, null, bankName);
     }
 
-    private static int[] getGradientColors(String bankName, boolean dark) {
-        String bank = bankName == null ? Constants.DEFAULT_BILL_BANK : bankName.trim().toUpperCase();
-
-        switch (bank) {
-            case "UNIONBANK":
-                return dark
-                        ? colors("#FF6A00", "#7A3B12", "#202020")
-                        : colors("#FFE0C2", "#FFF1E5", "#E7E7E7");
-            case "METROBANK":
-                return dark
-                        ? colors("#071B45", "#123A83", "#246BCE")
-                        : colors("#DCE8FF", "#BBD3FF", "#E5F0FF");
-            case "MARIBANK":
-                return dark
-                        ? colors("#7A1118", "#C92F36", "#FF6B6B")
-                        : colors("#FFE0E0", "#FFD0D0", "#FFF0F0");
-            case "GOTYME":
-                return dark
-                        ? colors("#063D4B", "#007C91", "#20BFC5")
-                        : colors("#D9F7FA", "#C8EFF1", "#DFFAF7");
-            case "GCASH":
-                return dark
-                        ? colors("#0639A6", "#1262D8", "#48B8F5")
-                        : colors("#DCEBFF", "#C7E0FF", "#E5F7FF");
-            case "MAYA":
-                return dark
-                        ? colors("#073D36", "#087B69", "#36C78F")
-                        : colors("#DDF7EE", "#C6EBDD", "#E8F8F1");
-            case "BDO":
-            default:
-                return dark
-                        ? colors("#063D8C", "#173F7A", "#B88A13")
-                        : colors("#D9EAFF", "#FFFFFF", "#FFF1B8");
+    private static String normalize(String bankName) {
+        if (bankName == null || bankName.trim().isEmpty()) {
+            return Constants.DEFAULT_BILL_BANK;
         }
-    }
-
-    @ColorInt
-    private static int getTextColor(String bankName, boolean dark) {
-        if (dark) {
-            return Color.WHITE;
-        }
-
-        String bank = bankName == null ? Constants.DEFAULT_BILL_BANK : bankName.trim().toUpperCase();
-        // Dark text is best for the light/pastel gradients. Dark cards use white instead.
-        return Color.rgb(25, 28, 32);
-    }
-
-    private static int[] colors(String first, String second, String third) {
-        return new int[]{Color.parseColor(first), Color.parseColor(second), Color.parseColor(third)};
+        return bankName.trim().toUpperCase(Locale.US);
     }
 
     private static float dp(Context context, float value) {
         return value * context.getResources().getDisplayMetrics().density;
     }
 
-    private static boolean isDarkTheme(Context context) {
-        return (context.getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+    private static int withAlpha(@ColorInt int color, int alpha) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
+    }
+
+    private static final class BankStyle {
+        final String logoText;
+        final int logoBackgroundColor;
+        final int logoTextColor;
+        final int gradientColor;
+        final float logoTextSizeSp;
+        final float letterSpacing;
+
+        BankStyle(String logoText, String logoBackground, String logoTextColor,
+                  String gradientColor, float logoTextSizeSp, float letterSpacing) {
+            this.logoText = logoText;
+            this.logoBackgroundColor = Color.parseColor(logoBackground);
+            this.logoTextColor = Color.parseColor(logoTextColor);
+            this.gradientColor = Color.parseColor(gradientColor);
+            this.logoTextSizeSp = logoTextSizeSp;
+            this.letterSpacing = letterSpacing;
+        }
+
+        static BankStyle forName(String bankName) {
+            switch (normalize(bankName)) {
+                case "UNIONBANK":
+                    return new BankStyle("U", "#8E4218", "#FFFFFF", "#C65D22", 15, 0);
+                case "MARIBANK":
+                    return new BankStyle("mari", "#B3262E", "#FFFFFF", "#D93A42", 9, 0);
+                case "METROBANK":
+                    return new BankStyle("MB", "#123A83", "#FFFFFF", "#246BCE", 11, 0.02f);
+                case "GOTYME":
+                    return new BankStyle("go\ntyme", "#077B83", "#FFFFFF", "#18A8AD", 8, 0);
+                case "GCASH":
+                    return new BankStyle("G", "#1458BF", "#FFFFFF", "#2D7DE0", 16, 0);
+                case "MAYA":
+                    return new BankStyle("maya", "#087B69", "#FFFFFF", "#18A97F", 9, 0);
+                case "BDO":
+                default:
+                    return new BankStyle("BDO", "#173F7A", "#FFE29A", "#245CA2", 11, 0.01f);
+            }
+        }
+    }
+
+    /** Draws the normal surface first, then clips the bank tint to the rounded row. */
+    private static final class BankRowDrawable extends Drawable {
+        private final Paint basePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path clipPath = new Path();
+        private final RectF rect = new RectF();
+        private final int bankColor;
+        private final float radius;
+        private final float gradientEnd;
+        private int drawableAlpha = 255;
+
+        BankRowDrawable(@ColorInt int surfaceColor, @ColorInt int bankColor,
+                        float radius, float gradientEnd) {
+            basePaint.setColor(surfaceColor);
+            this.bankColor = bankColor;
+            this.radius = radius;
+            this.gradientEnd = gradientEnd;
+        }
+
+        @Override
+        protected void onBoundsChange(Rect bounds) {
+            rect.set(bounds);
+            clipPath.reset();
+            clipPath.addRoundRect(rect, radius, radius, Path.Direction.CW);
+            float gradientWidth = Math.max(1, bounds.width() * gradientEnd);
+            gradientPaint.setShader(new LinearGradient(
+                    bounds.left, bounds.top, bounds.left + gradientWidth, bounds.top,
+                    withAlpha(bankColor, 112), withAlpha(bankColor, 0), Shader.TileMode.CLAMP));
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas) {
+            basePaint.setAlpha(drawableAlpha);
+            gradientPaint.setAlpha(drawableAlpha);
+            canvas.drawRoundRect(rect, radius, radius, basePaint);
+            int save = canvas.save();
+            canvas.clipPath(clipPath);
+            canvas.drawRect(rect.left, rect.top,
+                    rect.left + rect.width() * gradientEnd, rect.bottom, gradientPaint);
+            canvas.restoreToCount(save);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            drawableAlpha = alpha;
+            invalidateSelf();
+        }
+
+        @Override
+        public void setColorFilter(@Nullable ColorFilter colorFilter) {
+            basePaint.setColorFilter(colorFilter);
+            gradientPaint.setColorFilter(colorFilter);
+            invalidateSelf();
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
     }
 }

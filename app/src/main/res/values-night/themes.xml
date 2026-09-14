@@ -1,15 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Applied automatically when MODE_NIGHT_FOLLOW_SYSTEM is active and the
+  <!-- Applied automatically when MODE_NIGHT_FOLLOW_SYSTEM is active and the
          system is in dark mode — i.e. the user left the theme on "System". -->
-    <style name="Theme.Cutoff" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/cutoff_brand</item>
-        <item name="colorPrimaryVariant">@color/cutoff_brand_dark</item>
-        <item name="colorOnPrimary">@color/dark_on_surface</item>
-        <item name="android:colorBackground">@color/dark_background</item>
-        <item name="colorSurface">@color/dark_surface</item>
-        <item name="colorOnSurface">@color/dark_on_surface</item>
-    </style>
-
+  <style name="Theme.Cutoff" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="colorPrimary">#B3D4BC</item>
+    <item name="colorPrimaryVariant">#B3D4BC</item>
+    <item name="colorOnPrimary">@color/dark_background</item>
+    <item name="android:colorBackground">@color/dark_background</item>
+    <item name="colorSurface">@color/dark_surface</item>
+    <item name="colorOnSurface">@color/dark_on_surface</item>
+    <item name="cutoffSoftSurface">#303030</item>
+    <item name="cutoffOutline">#424242</item>
+    <item name="android:fontFamily">sans</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:statusBarColor">?android:attr/colorBackground</item>
+    <item name="android:navigationBarColor">#171C19</item>
+    <item name="colorSecondary">?attr/colorPrimary</item>
+    <item name="materialButtonStyle">@style/Widget.Cutoff.Button</item>
+  </style>
 </resources>

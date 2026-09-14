@@ -62,6 +62,7 @@ public class IncentiveAdapter extends ListAdapter<BillEntity, IncentiveAdapter.V
         holder.name.setText(incentive.getName());
         holder.amount.setText(CurrencyUtils.format(incentive.getAmount()));
         holder.menuButton.setOnClickListener(v -> showIncentiveMenu(v, incentive));
+        holder.itemView.setOnClickListener(v -> listener.onEdit(incentive));
     }
 
     private static final int MENU_EDIT = 1;

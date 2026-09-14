@@ -33,6 +33,11 @@ public class EditBillDialog extends DialogFragment {
     private static final String ARG_CURRENT_NAME = "arg_current_name";
     private static final String ARG_CURRENT_AMOUNT = "arg_current_amount";
     private static final String ARG_CURRENT_BANK = "arg_current_bank";
+    private static final String ARG_CUTOFF_ONLY = "arg_cutoff_only";
+
+    public void setCutoffOnly(boolean cutoffOnly) {
+        requireArguments().putBoolean(ARG_CUTOFF_ONLY, cutoffOnly);
+    }
 
     private OnBillEditedListener listener;
 
@@ -92,8 +97,8 @@ public class EditBillDialog extends DialogFragment {
             inputAmount.setText(String.valueOf(currentAmount));
         }
 
-        return new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.title_edit_bill)
+        return new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
+                .setTitle(args.getBoolean(ARG_CUTOFF_ONLY) ? "Edit bill · this cutoff only" : "Edit bill template")
                 .setView(content)
                 .setPositiveButton(R.string.action_save, (dialogInterface, which) -> {
                     String name = inputName.getText().toString().trim();

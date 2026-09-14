@@ -67,6 +67,7 @@ public class FixedBillAdapter extends ListAdapter<BillEntity, FixedBillAdapter.V
         holder.bank.setText(bill.getBank());
         BankGradientUtils.apply(holder.itemView, holder.name, holder.amount, holder.bank, holder.menuButton, bill.getBank());
         holder.menuButton.setOnClickListener(v -> showBillMenu(v, bill));
+        holder.itemView.setOnClickListener(v -> listener.onEdit(bill));
     }
 
     private static final int MENU_EDIT = 1;

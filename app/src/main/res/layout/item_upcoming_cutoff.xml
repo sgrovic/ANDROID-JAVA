@@ -6,20 +6,25 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:background="@drawable/bg_row_item"
-    android:layout_marginBottom="8dp"
-    android:padding="12dp">
+    android:foreground="?attr/selectableItemBackground"
+    android:minHeight="60dp"
+    android:layout_marginBottom="6dp"
+    android:paddingStart="12dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp">
 
     <FrameLayout
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:background="@drawable/bg_icon_tile">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_gravity="center"
-            android:src="@android:drawable/ic_menu_my_calendar"
-            app:tint="@color/sage_accent" />
+            android:src="@drawable/ic_calendar_24"
+            app:tint="?attr/colorPrimary" />
     </FrameLayout>
 
     <TextView
@@ -27,8 +32,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="10dp"
         android:textColor="?attr/colorOnSurface"
-        android:textSize="13sp" />
+        android:textSize="14sp" />
 
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/baseline_keyboard_arrow_right_24"
+        android:contentDescription="@null"
+        app:tint="?attr/colorOnSurface" />
 </LinearLayout>

@@ -34,4 +34,6 @@
         <item quantity="one">%d day left</item>
         <item quantity="other">%d days left</item>
     </plurals>
+    <string name="sheet_template_scope">Copied into new cutoffs. Existing cutoffs stay unchanged.</string>
+    <string name="sheet_cutoff_scope">Added to this cutoff only.</string>
 </resources>

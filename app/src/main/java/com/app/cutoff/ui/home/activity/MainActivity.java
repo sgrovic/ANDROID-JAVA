@@ -6,8 +6,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 
 import com.app.cutoff.R;
 import com.app.cutoff.data.preference.ThemePreference;
@@ -55,7 +55,30 @@ public class MainActivity extends AppCompatActivity {
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
             BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-            NavigationUI.setupWithNavController(bottomNav, navController);
+
+            // Bottom navigation is intentionally explicit: selecting Home or Settings
+            // always takes the user to that fragment, even when a nested screen (such
+            // as cutoff detail or bill management) is currently visible.
+            bottomNav.setOnItemSelectedListener(item -> {
+                int destinationId = item.getItemId();
+                if (navController.getCurrentDestination() != null
+                        && navController.getCurrentDestination().getId() == destinationId) {
+                    return true;
+                }
+
+                NavOptions options = new NavOptions.Builder()
+                        .setLaunchSingleTop(true)
+                        .setPopUpTo(navController.getGraph().getStartDestinationId(), false)
+                        .build();
+                navController.navigate(destinationId, null, options);
+                return true;
+            });
+
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (destination.getId() == R.id.homeFragment || destination.getId() == R.id.settingsFragment) {
+                    bottomNav.setSelectedItemId(destination.getId());
+                }
+            });
         }
     }
 

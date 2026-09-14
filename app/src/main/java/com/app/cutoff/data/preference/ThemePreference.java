@@ -22,6 +22,7 @@ public class ThemePreference {
     public static final String MODE_DARK = "DARK";
     public static final String MODE_SAGE = "SAGE";
     public static final String MODE_SLATE = "SLATE";
+    public static final String MODE_YELLOW = "YELLOW";
 
     private final SharedPreferences prefs;
 

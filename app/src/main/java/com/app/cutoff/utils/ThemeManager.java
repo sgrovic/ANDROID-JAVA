@@ -17,16 +17,13 @@ public final class ThemeManager {
     public static void applyNightMode(String themeMode) {
         switch (themeMode) {
             case ThemePreference.MODE_LIGHT:
+            case ThemePreference.MODE_YELLOW:
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
             case ThemePreference.MODE_DARK:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
             case ThemePreference.MODE_SAGE:
             case ThemePreference.MODE_SLATE:
-                // Sage/Slate are light-based palettes applied via theme overlay;
-                // night mode stays off so the overlay's colors render as authored.
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             case ThemePreference.MODE_SYSTEM:
             default:
@@ -38,6 +35,8 @@ public final class ThemeManager {
     /** Resolves which style resource to apply on top of night mode, for Sage/Slate. */
     public static int resolveThemeStyleRes(String themeMode) {
         switch (themeMode) {
+            case ThemePreference.MODE_YELLOW:
+                return com.app.cutoff.R.style.Theme_Cutoff_Yellow;
             case ThemePreference.MODE_SAGE:
                 return com.app.cutoff.R.style.Theme_Cutoff_Sage;
             case ThemePreference.MODE_SLATE:

@@ -5,17 +5,17 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <EditText
+    <EditText android:background="@drawable/bg_input" android:padding="16dp" android:minHeight="56dp" android:textSize="16sp"
         android:id="@+id/input_incentive_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name (e.g. Retro, Bonus)" />
 
-    <EditText
+    <EditText android:background="@drawable/bg_input" android:padding="16dp" android:minHeight="56dp" android:textSize="16sp"
         android:id="@+id/input_incentive_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:inputType="numberDecimal"
         android:hint="Amount" />
 

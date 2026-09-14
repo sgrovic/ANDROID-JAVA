@@ -1,28 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <EditText
-        android:id="@+id/input_bill_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Name" />
-
-    <Spinner
-        android:id="@+id/input_bill_bank"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
-
-    <EditText
-        android:id="@+id/input_bill_amount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:inputType="numberDecimal"
-        android:hint="Amount" />
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+  <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Bill name" android:labelFor="@id/input_bill_name" android:textColor="?attr/colorOnSurface" android:textSize="12sp" />
+  <EditText android:id="@+id/input_bill_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="52dp" android:layout_marginTop="8dp" android:padding="14dp" android:background="@drawable/bg_input" android:inputType="textCapSentences" android:hint="e.g. Rent" android:textSize="16sp" />
+  <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Amount" android:labelFor="@id/input_bill_amount" android:textColor="?attr/colorOnSurface" android:textSize="12sp" />
+  <EditText android:id="@+id/input_bill_amount" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="52dp" android:layout_marginTop="8dp" android:padding="14dp" android:background="@drawable/bg_input" android:inputType="numberDecimal" android:hint="0.00" android:textSize="16sp" />
+  <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Payment account" android:labelFor="@id/input_bill_bank" android:textColor="?attr/colorOnSurface" android:textSize="12sp" />
+  <Spinner android:id="@+id/input_bill_bank" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="8dp" android:background="@drawable/bg_input" android:padding="12dp" />
 </LinearLayout>

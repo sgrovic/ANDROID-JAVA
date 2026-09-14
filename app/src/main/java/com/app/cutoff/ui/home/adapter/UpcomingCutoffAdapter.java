@@ -25,18 +25,12 @@ import java.util.List;
  */
 public class UpcomingCutoffAdapter extends RecyclerView.Adapter<UpcomingCutoffAdapter.ViewHolder> {
 
-    /** Rows shown before "See more" is tapped. */
-    public static final int COLLAPSED_LIMIT = 2;
-
-    private static final DateTimeFormatter LABEL_FORMAT = DateTimeFormatter.ofPattern("MMMM d");
-
     public interface OnCutoffClickListener {
         void onCutoffClick(LocalDate periodEnd);
     }
 
     private final List<LocalDate> allPeriodEnds = new ArrayList<>();
     private final OnCutoffClickListener clickListener;
-    private boolean expanded = false;
 
     public UpcomingCutoffAdapter(OnCutoffClickListener clickListener) {
         this.clickListener = clickListener;
@@ -50,21 +44,6 @@ public class UpcomingCutoffAdapter extends RecyclerView.Adapter<UpcomingCutoffAd
         notifyDataSetChanged();
     }
 
-    /** Toggle between showing only the first COLLAPSED_LIMIT rows and all of them. */
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
-        notifyDataSetChanged();
-    }
-
-    public boolean isExpanded() {
-        return expanded;
-    }
-
-    /** Whether there are more rows hidden than the collapsed view shows. */
-    public boolean hasMore() {
-        return allPeriodEnds.size() > COLLAPSED_LIMIT;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -76,7 +55,9 @@ public class UpcomingCutoffAdapter extends RecyclerView.Adapter<UpcomingCutoffAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LocalDate periodEnd = allPeriodEnds.get(position);
-        holder.periodLabel.setText(periodEnd.format(LABEL_FORMAT));
+        holder.periodLabel.setText(com.app.cutoff.utils.DateUtils.periodStart(periodEnd)
+                .format(DateTimeFormatter.ofPattern("MMM d")) + "–"
+                + periodEnd.format(DateTimeFormatter.ofPattern("d, yyyy")));
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onCutoffClick(periodEnd);
@@ -86,7 +67,7 @@ public class UpcomingCutoffAdapter extends RecyclerView.Adapter<UpcomingCutoffAd
 
     @Override
     public int getItemCount() {
-        return expanded ? allPeriodEnds.size() : Math.min(COLLAPSED_LIMIT, allPeriodEnds.size());
+        return allPeriodEnds.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

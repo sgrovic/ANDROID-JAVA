@@ -51,6 +51,7 @@ public class CutoffDetailFragment extends Fragment {
         TextView remainingValue = view.findViewById(R.id.text_remaining_value);
         ProgressBar spendingProgress = view.findViewById(R.id.progress_spending);
         TextView spendingPercentLabel = view.findViewById(R.id.text_spending_percent);
+        TextView summaryRemaining = view.findViewById(R.id.text_summary_remaining);
 
         RecyclerView incentiveList = view.findViewById(R.id.recycler_incentives);
         RecyclerView fixedBillList = view.findViewById(R.id.recycler_fixed_bills);
@@ -115,6 +116,7 @@ public class CutoffDetailFragment extends Fragment {
 
             double remaining = latestSalary[0] + latestIncentives[0] - latestExpenses[0];
             remainingValue.setText(CurrencyUtils.format(remaining));
+            summaryRemaining.setText(CurrencyUtils.format(remaining));
 
             double totalAvailable = latestSalary[0] + latestIncentives[0];
             salaryValue.setText(CurrencyUtils.format(totalAvailable));
@@ -128,6 +130,13 @@ public class CutoffDetailFragment extends Fragment {
 
         viewModel.getCutoff().observe(getViewLifecycleOwner(), cutoff -> {
             if (cutoff == null) return;
+            java.time.LocalDate start = java.time.LocalDate.ofEpochDay(cutoff.getPeriodStartEpochDay());
+            java.time.LocalDate end = java.time.LocalDate.ofEpochDay(cutoff.getPeriodEndEpochDay());
+            java.time.LocalDate today = java.time.LocalDate.now();
+            String period = start.format(java.time.format.DateTimeFormatter.ofPattern("MMM d")) + "–" + end.format(java.time.format.DateTimeFormatter.ofPattern("d, yyyy"));
+            ((TextView) view.findViewById(R.id.text_cutoff_period)).setText(period);
+            ((TextView) view.findViewById(R.id.text_cutoff_status)).setText(end.isBefore(today) ? "Past cutoff" : start.isAfter(today) ? "Upcoming cutoff" : "Current cutoff");
+            ((TextView) view.findViewById(R.id.text_cutoff_scope)).setText("Changes apply only to " + period + ".");
             salaryValue.setText(CurrencyUtils.format(cutoff.getSalarySnapshot()));
             latestSalary[0] = cutoff.getSalarySnapshot();
             updateTotals.run();
@@ -171,6 +180,7 @@ public class CutoffDetailFragment extends Fragment {
     /** Shared edit flow for fixed bills, variable bills, and incentives alike. */
     private void openEditBillDialog(BillEntity bill) {
         EditBillDialog dialog = EditBillDialog.newInstance(bill.getId(), bill.getName(), bill.getAmount(), bill.getBank());
+        dialog.setCutoffOnly(true);
         dialog.setOnBillEditedListener((name, amount, bank) -> {
             // IMPORTANT: don't mutate `bill` in place — it's the exact instance the
             // adapter's ListAdapter is still holding in its current submitted list.

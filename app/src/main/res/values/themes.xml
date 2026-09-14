@@ -1,48 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Default/Light theme -->
-    <style name="Theme.Cutoff" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/cutoff_brand</item>
-        <item name="colorPrimaryVariant">@color/cutoff_brand_dark</item>
-        <item name="colorOnPrimary">@color/light_surface</item>
-        <item name="android:colorBackground">@color/light_background</item>
-        <item name="colorSurface">@color/light_surface</item>
-        <item name="colorOnSurface">@color/light_on_surface</item>
-    </style>
-
-    <style name="Theme.Cutoff.Light" parent="Theme.Cutoff" />
-
-    <!-- Dark is provided via values-night/themes.xml overriding Theme.Cutoff's colors;
+  <!-- Default/Light theme -->
+  <style name="Theme.Cutoff" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="colorPrimary">@color/cutoff_brand</item>
+    <item name="colorPrimaryVariant">@color/cutoff_brand_dark</item>
+    <item name="colorOnPrimary">@color/light_surface</item>
+    <item name="android:colorBackground">@color/light_background</item>
+    <item name="colorSurface">@color/light_surface</item>
+    <item name="colorOnSurface">@color/light_on_surface</item>
+    <item name="cutoffSoftSurface">#F1F3F1</item>
+    <item name="cutoffOutline">#DFE3DF</item>
+    <item name="android:fontFamily">sans</item>
+    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:statusBarColor">?android:attr/colorBackground</item>
+    <item name="android:navigationBarColor">#171C19</item>
+    <item name="colorSecondary">?attr/colorPrimary</item>
+    <item name="materialButtonStyle">@style/Widget.Cutoff.Button</item>
+  </style>
+  <style name="Theme.Cutoff.Light" parent="Theme.Cutoff" />
+  <!-- Dark is provided via values-night/themes.xml overriding Theme.Cutoff's colors;
          Theme.Cutoff.Dark below is a forced-dark variant for when the user picks
          "Dark" explicitly regardless of system setting. -->
-    <style name="Theme.Cutoff.Dark" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="colorPrimary">@color/cutoff_brand</item>
-        <item name="colorPrimaryVariant">@color/cutoff_brand_dark</item>
-        <item name="colorOnPrimary">@color/dark_on_surface</item>
-        <item name="android:colorBackground">@color/dark_background</item>
-        <item name="colorSurface">@color/dark_surface</item>
-        <item name="colorOnSurface">@color/dark_on_surface</item>
-    </style>
-
-    <!-- Sage: light-based palette, muted green-gray accent -->
-    <style name="Theme.Cutoff.Sage" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="colorPrimary">@color/sage_accent</item>
-        <item name="colorPrimaryVariant">@color/sage_accent</item>
-        <item name="colorOnPrimary">@color/sage_surface</item>
-        <item name="android:colorBackground">@color/sage_background</item>
-        <item name="colorSurface">@color/sage_surface</item>
-        <item name="colorOnSurface">@color/sage_on_surface</item>
-    </style>
-
-    <!-- Slate: dark-based palette, blue-gray accent -->
-    <style name="Theme.Cutoff.Slate" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="colorPrimary">@color/slate_accent</item>
-        <item name="colorPrimaryVariant">@color/slate_accent</item>
-        <item name="colorOnPrimary">@color/slate_on_surface</item>
-        <item name="android:colorBackground">@color/slate_background</item>
-        <item name="colorSurface">@color/slate_surface</item>
-        <item name="colorOnSurface">@color/slate_on_surface</item>
-    </style>
-
+  <style name="Theme.Cutoff.Dark" parent="Theme.MaterialComponents.NoActionBar">
+    <item name="colorPrimary">#B3D4BC</item>
+    <item name="colorPrimaryVariant">#B3D4BC</item>
+    <item name="colorOnPrimary">@color/dark_background</item>
+    <item name="android:colorBackground">@color/dark_background</item>
+    <item name="colorSurface">@color/dark_surface</item>
+    <item name="colorOnSurface">@color/dark_on_surface</item>
+    <item name="cutoffSoftSurface">#303030</item>
+    <item name="cutoffOutline">#424242</item>
+    <item name="android:fontFamily">sans</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:statusBarColor">?android:attr/colorBackground</item>
+    <item name="android:navigationBarColor">#171C19</item>
+    <item name="colorSecondary">?attr/colorPrimary</item>
+    <item name="materialButtonStyle">@style/Widget.Cutoff.Button</item>
+  </style>
+  <!-- Sage: light-based palette, muted green-gray accent -->
+  <style name="Theme.Cutoff.Sage" parent="Theme.MaterialComponents.NoActionBar">
+    <item name="colorPrimary">@color/sage_accent</item>
+    <item name="colorPrimaryVariant">@color/sage_accent</item>
+    <item name="colorOnPrimary">@color/sage_background</item>
+    <item name="android:colorBackground">@color/sage_background</item>
+    <item name="colorSurface">@color/sage_surface</item>
+    <item name="colorOnSurface">@color/sage_on_surface</item>
+    <item name="cutoffSoftSurface">#304C3B</item>
+    <item name="cutoffOutline">#476450</item>
+    <item name="android:fontFamily">sans</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:statusBarColor">?android:attr/colorBackground</item>
+    <item name="android:navigationBarColor">#171C19</item>
+    <item name="colorSecondary">?attr/colorPrimary</item>
+    <item name="materialButtonStyle">@style/Widget.Cutoff.Button</item>
+  </style>
+  <!-- Slate: dark-based palette, blue-gray accent -->
+  <style name="Theme.Cutoff.Slate" parent="Theme.MaterialComponents.NoActionBar">
+    <item name="colorPrimary">@color/slate_accent</item>
+    <item name="colorPrimaryVariant">@color/slate_accent</item>
+    <item name="colorOnPrimary">@color/dark_background</item>
+    <item name="android:colorBackground">@color/slate_background</item>
+    <item name="colorSurface">@color/slate_surface</item>
+    <item name="colorOnSurface">@color/slate_on_surface</item>
+    <item name="cutoffSoftSurface">#303C48</item>
+    <item name="cutoffOutline">#455260</item>
+    <item name="android:fontFamily">sans</item>
+    <item name="android:windowLightStatusBar">false</item>
+    <item name="android:statusBarColor">?android:attr/colorBackground</item>
+    <item name="android:navigationBarColor">#171C19</item>
+    <item name="colorSecondary">?attr/colorPrimary</item>
+    <item name="materialButtonStyle">@style/Widget.Cutoff.Button</item>
+  </style>
 </resources>

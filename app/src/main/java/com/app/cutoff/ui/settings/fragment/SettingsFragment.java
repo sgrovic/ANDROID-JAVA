@@ -66,7 +66,6 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
-
         TextView themeValue = view.findViewById(R.id.text_theme_value);
         TextView fixedBillsCount = view.findViewById(R.id.text_fixed_bills_count);
         TextView firstHalfValue = view.findViewById(R.id.text_salary_first_half);
@@ -84,7 +83,7 @@ public class SettingsFragment extends Fragment {
         });
 
         viewModel.getFixedBillCount().observe(getViewLifecycleOwner(), count ->
-                fixedBillsCount.setText(String.valueOf(count != null ? count : 0)));
+                fixedBillsCount.setText((count != null ? count : 0) + " templates · Manage"));
 
         view.findViewById(R.id.row_theme).setOnClickListener(v -> showThemePicker(themeValue));
 
@@ -107,7 +106,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void confirmAndImport(Uri source) {
-        new AlertDialog.Builder(requireContext())
+        new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
                 .setTitle(R.string.title_confirm_import)
                 .setMessage(R.string.message_confirm_import)
                 .setPositiveButton(R.string.action_import, (dialogInterface, which) ->
@@ -131,7 +130,7 @@ public class SettingsFragment extends Fragment {
             inputSecondHalf.setText(String.valueOf(currentSalary.getSixteenthToEnd()));
         }
 
-        new AlertDialog.Builder(requireContext())
+        new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
                 .setTitle(R.string.title_edit_salary)
                 .setView(content)
                 .setPositiveButton(R.string.action_save, (dialogInterface, which) -> {
@@ -148,15 +147,42 @@ public class SettingsFragment extends Fragment {
     }
 
     private void showThemePicker(TextView themeValue) {
-        String[] labels = {"Light", "Dark", "Sage", "Slate"};
+        String[] labels = {"Light", "Dark", "Sage", "Slate", "Yellow"};
         String[] modes = {
                 ThemePreference.MODE_LIGHT, ThemePreference.MODE_DARK,
-                ThemePreference.MODE_SAGE, ThemePreference.MODE_SLATE
+                ThemePreference.MODE_SAGE, ThemePreference.MODE_SLATE, ThemePreference.MODE_YELLOW
         };
 
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        String[] descriptions = {"White background · Black text", "Charcoal background · White text",
+                "Dark sage background · White text", "Blue-gray background · White text",
+                "Soft yellow background · Dark text"};
+        int[] backgrounds = {0xFFFFFFFF, 0xFF151515, 0xFF1B2B22, 0xFF1C1F24, 0xFFFFF8DE};
+        android.widget.ArrayAdapter<String> options = new android.widget.ArrayAdapter<String>(
+                requireContext(), android.R.layout.simple_list_item_1, labels) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull android.view.ViewGroup parent) {
+                TextView row = (TextView) super.getView(position, convertView, parent);
+                float density = getResources().getDisplayMetrics().density;
+                row.setSingleLine(false);
+                row.setText(labels[position] + (modes[position].equals(viewModel.getThemeMode()) ? "  ✓" : "")
+                        + "\n" + descriptions[position]);
+                row.setTextSize(14);
+                row.setTextColor(position == 0 || position == 4 ? 0xFF292511 : 0xFFFFFFFF);
+                android.graphics.drawable.GradientDrawable swatch = new android.graphics.drawable.GradientDrawable();
+                swatch.setColor(backgrounds[position]);
+                swatch.setCornerRadius(14 * density);
+                row.setBackground(swatch);
+                row.setPadding((int) (24 * density), (int) (16 * density),
+                        (int) (24 * density), (int) (16 * density));
+                row.setMinHeight((int) (76 * density));
+                return row;
+            }
+        };
+
+        new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
                 .setTitle(R.string.title_choose_theme)
-                .setItems(labels, (dialogInterface, which) -> {
+                .setAdapter(options, (dialogInterface, which) -> {
                     boolean changed = viewModel.setThemeMode(modes[which]);
                     themeValue.setText(labels[which]);
                     if (changed) {
@@ -175,6 +201,7 @@ public class SettingsFragment extends Fragment {
         if (ThemePreference.MODE_DARK.equals(mode)) return "Dark";
         if (ThemePreference.MODE_SAGE.equals(mode)) return "Sage";
         if (ThemePreference.MODE_SLATE.equals(mode)) return "Slate";
+        if (ThemePreference.MODE_YELLOW.equals(mode)) return "Yellow";
         if (ThemePreference.MODE_LIGHT.equals(mode)) return "Light";
         return "System";
     }
