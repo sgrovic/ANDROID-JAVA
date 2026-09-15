@@ -19,4 +19,7 @@ public interface SalaryDao {
 
     @Query("SELECT * FROM salary WHERE id = 'salary_singleton' LIMIT 1")
     SalaryEntity getSalarySync();
+
+    @Query("DELETE FROM salary")
+    void deleteSalary();
 }

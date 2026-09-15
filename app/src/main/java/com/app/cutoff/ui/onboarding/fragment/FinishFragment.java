@@ -2,6 +2,8 @@ package com.app.cutoff.ui.onboarding.fragment;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +36,28 @@ public class FinishFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(OnboardingViewModel.class);
+
+        com.app.cutoff.ui.onboarding.model.OnboardingState state = viewModel.getState();
+        java.time.LocalDate today = java.time.LocalDate.now();
+        double income = com.app.cutoff.utils.DateUtils.isFirstHalf(today)
+                ? state.getFirstToFifteenth() : state.getSixteenthToEnd();
+        double bills = 0;
+        for (com.app.cutoff.ui.onboarding.model.OnboardingState.DraftFixedBill bill : state.getDraftFixedBills()) {
+            bills += bill.amount;
+        }
+        double remaining = income - bills;
+        String period = com.app.cutoff.utils.DateUtils.periodStart(today)
+                .format(java.time.format.DateTimeFormatter.ofPattern("MMM d"))
+                + "–" + com.app.cutoff.utils.DateUtils.periodEnd(today)
+                .format(java.time.format.DateTimeFormatter.ofPattern("d, yyyy"));
+        ((TextView) view.findViewById(R.id.text_cutoff_period)).setText(period);
+        ((TextView) view.findViewById(R.id.text_salary_value)).setText(com.app.cutoff.utils.CurrencyUtils.format(income));
+        ((TextView) view.findViewById(R.id.text_total_bill_value)).setText(com.app.cutoff.utils.CurrencyUtils.format(bills));
+        ((TextView) view.findViewById(R.id.text_remaining_value)).setText(com.app.cutoff.utils.CurrencyUtils.format(remaining));
+        ((TextView) view.findViewById(R.id.text_summary_remaining)).setText(com.app.cutoff.utils.CurrencyUtils.format(remaining));
+        int percent = income > 0 ? (int) Math.round(bills / income * 100) : 0;
+        ((ProgressBar) view.findViewById(R.id.progress_spending)).setProgress(Math.min(100, Math.max(0, percent)));
+        ((TextView) view.findViewById(R.id.text_spending_percent)).setText(percent + "% of income allocated to bills");
 
         viewModel.getOnboardingComplete().observe(getViewLifecycleOwner(), isComplete -> {
             if (Boolean.TRUE.equals(isComplete) && getActivity() instanceof OnboardingActivity) {

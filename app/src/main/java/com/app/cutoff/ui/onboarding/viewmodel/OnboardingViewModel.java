@@ -7,8 +7,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.app.cutoff.data.backup.BackupManager;
-import com.app.cutoff.data.database.entity.BillEntity;
 import com.app.cutoff.data.preference.ThemePreference;
 import com.app.cutoff.data.repository.BackupRepository;
 import com.app.cutoff.data.repository.BillRepository;
@@ -93,7 +91,7 @@ public class OnboardingViewModel extends ViewModel {
         state.removeDraftFixedBill(bill);
     }
 
-    /** Fires true once the file is parsed and OnboardingState is prefilled; fires once per attempt. */
+    /** Fires true once the complete backup is committed and onboarding is finished. */
     public LiveData<Boolean> getImportSucceeded() {
         return importSucceeded;
     }
@@ -104,28 +102,14 @@ public class OnboardingViewModel extends ViewModel {
     }
 
     /**
-     * Parses the chosen backup file and prefills salary + fixed bills into
-     * OnboardingState -- nothing is written to the database here, that
-     * still only happens in completeOnboarding(). The backup file doesn't
-     * carry a theme (see BackupManager), so theme is unaffected.
+     * Restore the full backup and finish onboarding directly. Passing through
+     * draft setup afterward would discard cutoff history or duplicate templates.
      */
     public void importFromFile(@NonNull Uri source) {
         ioExecutor.execute(() -> {
             try {
-                BackupManager.BackupPayload payload = backupRepository.parseOnly(source);
-
-                if (payload.salary != null) {
-                    state.setFirstToFifteenth(payload.salary.getFirstToFifteenth());
-                    state.setSixteenthToEnd(payload.salary.getSixteenthToEnd());
-                }
-
-                state.getDraftFixedBills().clear();
-                for (BillEntity template : payload.fixedBillTemplates) {
-                    state.addDraftFixedBill(new OnboardingState.DraftFixedBill(
-                            template.getName(), template.getAmount(), template.getIconKey(), template.getBank()));
-                }
-
-                state.setImported(true);
+                backupRepository.importFrom(source);
+                settingsRepository.setOnboardingComplete(true);
                 importSucceeded.postValue(true);
             } catch (Exception e) {
                 importError.postValue("Couldn't read that file");

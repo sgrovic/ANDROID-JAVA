@@ -100,6 +100,23 @@ public class CutoffDetailFragment extends Fragment {
         });
         variableBillList.setAdapter(variableBillAdapter);
 
+        TextView billTabDescription = view.findViewById(R.id.text_bill_tab_description);
+        View addFixedBill = view.findViewById(R.id.button_add_fixed_bill);
+        View addVariableBill = view.findViewById(R.id.button_add_variable_bill);
+        com.google.android.material.button.MaterialButtonToggleGroup billTabs =
+                view.findViewById(R.id.bill_tabs);
+        billTabs.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            boolean fixed = checkedId == R.id.tab_fixed_bills;
+            fixedBillList.setVisibility(fixed ? View.VISIBLE : View.GONE);
+            variableBillList.setVisibility(fixed ? View.GONE : View.VISIBLE);
+            addFixedBill.setVisibility(fixed ? View.VISIBLE : View.GONE);
+            addVariableBill.setVisibility(fixed ? View.GONE : View.VISIBLE);
+            billTabDescription.setText(fixed
+                    ? "Copied from templates · Editable for this cutoff"
+                    : "Purchases for this cutoff only");
+        });
+
         viewModel.getIncentives().observe(getViewLifecycleOwner(), incentiveAdapter::submitList);
         viewModel.getFixedBills().observe(getViewLifecycleOwner(), fixedBillAdapter::submitList);
         viewModel.getVariableBills().observe(getViewLifecycleOwner(), variableBillAdapter::submitList);

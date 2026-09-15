@@ -32,7 +32,7 @@ public class HomeViewModel extends ViewModel {
     private final BillRepository billRepository;
     private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
 
-    private final MutableLiveData<Long> currentCutoffId = new MutableLiveData<>();
+    private final LiveData<Long> currentCutoffId;
 
     // Cached once (not recreated per getter call): Transformations.switchMap()/Room's
     // LiveData only start computing once they gain an observer, so calling the getter
@@ -47,16 +47,21 @@ public class HomeViewModel extends ViewModel {
     public HomeViewModel(CutoffRepository cutoffRepository, BillRepository billRepository) {
         this.cutoffRepository = cutoffRepository;
         this.billRepository = billRepository;
-        this.currentCutoff = Transformations.switchMap(currentCutoffId, cutoffRepository::observeCutoff);
-        this.currentCutoffExpenses = Transformations.switchMap(currentCutoffId, billRepository::observeTotalExpensesForCutoff);
-        this.currentCutoffIncentives = Transformations.switchMap(currentCutoffId, billRepository::observeTotalIncentivesForCutoff);
+        // Imports assign new row IDs. Follow the period, then switch the totals
+        // to whichever cutoff now belongs to it, including while Home is retained.
+        this.currentCutoff = cutoffRepository.observeCurrentCutoff();
+        this.currentCutoffId = Transformations.distinctUntilChanged(
+                Transformations.map(currentCutoff, cutoff -> cutoff == null ? null : cutoff.getId()));
+        this.currentCutoffExpenses = Transformations.switchMap(currentCutoffId,
+                id -> id == null ? new MutableLiveData<>(0.0) : billRepository.observeTotalExpensesForCutoff(id));
+        this.currentCutoffIncentives = Transformations.switchMap(currentCutoffId,
+                id -> id == null ? new MutableLiveData<>(0.0) : billRepository.observeTotalIncentivesForCutoff(id));
         ensureCurrentCutoff();
     }
 
     private void ensureCurrentCutoff() {
         ioExecutor.execute(() -> {
-            long id = cutoffRepository.ensureCurrentCutoffExists();
-            currentCutoffId.postValue(id);
+            cutoffRepository.ensureCurrentCutoffExists();
         });
     }
 

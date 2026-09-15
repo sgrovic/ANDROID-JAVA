@@ -46,15 +46,18 @@ public class BackupRepository {
     private final BillDao billDao;
     private final CutoffDao cutoffDao;
     private final SalaryDao salaryDao;
+    private final CutoffRepository cutoffRepository;
 
     @Inject
     public BackupRepository(@ApplicationContext Context appContext, AppDatabase appDatabase,
-                             BillDao billDao, CutoffDao cutoffDao, SalaryDao salaryDao) {
+                             BillDao billDao, CutoffDao cutoffDao, SalaryDao salaryDao,
+                             CutoffRepository cutoffRepository) {
         this.appContext = appContext;
         this.appDatabase = appDatabase;
         this.billDao = billDao;
         this.cutoffDao = cutoffDao;
         this.salaryDao = salaryDao;
+        this.cutoffRepository = cutoffRepository;
     }
 
     public void exportTo(Uri destination) throws IOException, JSONException {
@@ -73,10 +76,7 @@ public class BackupRepository {
     }
 
     /**
-     * Reads and parses a backup file without touching the database. Used by
-     * onboarding's import step, which only needs to preview the salary and
-     * fixed-bill values into OnboardingState -- everything is committed
-     * together later, when the user taps "Go to home".
+     * Reads and validates a backup without touching the database.
      */
     public BackupManager.BackupPayload parseOnly(Uri source) throws IOException, BackupFormatException {
         String json = readAll(source);
@@ -91,12 +91,18 @@ public class BackupRepository {
     public void importFrom(Uri source) throws IOException, BackupFormatException {
         String json = readAll(source);
         BackupManager.BackupPayload payload = BackupManager.fromJson(json);
-        appDatabase.runInTransaction(() -> applyPayload(payload));
+        appDatabase.runInTransaction(() -> {
+            applyPayload(payload);
+            // Older backups may not include today's period. Create it only if
+            // absent, using restored defaults, before observers see the restore.
+            cutoffRepository.ensureCurrentCutoffExists();
+        });
     }
 
     private void applyPayload(BackupManager.BackupPayload payload) {
         billDao.deleteAllBills();
         cutoffDao.deleteAllCutoffs();
+        salaryDao.deleteSalary();
 
         if (payload.salary != null) {
             salaryDao.upsert(payload.salary);

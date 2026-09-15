@@ -18,11 +18,7 @@ import com.app.cutoff.ui.onboarding.viewmodel.OnboardingViewModel;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
- * Screen 2: Import your data?. Offers to prefill salary and fixed bills
- * from a Cutoff backup file (see BackupRepository/BackupManager) before
- * the user sets them up manually. Nothing is written to the database
- * here -- a successful parse just fills OnboardingState, which is
- * committed as a whole when onboarding finishes.
+ * Screen 2: Restore a complete backup and open Home, or start manual setup.
  */
 @AndroidEntryPoint
 public class ImportPromptFragment extends Fragment {
@@ -49,7 +45,7 @@ public class ImportPromptFragment extends Fragment {
 
         viewModel.getImportSucceeded().observe(getViewLifecycleOwner(), succeeded -> {
             if (Boolean.TRUE.equals(succeeded)) {
-                NavHostFragment.findNavController(this).navigate(R.id.action_importPrompt_to_salary);
+                ((com.app.cutoff.ui.onboarding.activity.OnboardingActivity) requireActivity()).navigateToMainActivity();
             }
         });
 
@@ -61,6 +57,9 @@ public class ImportPromptFragment extends Fragment {
 
         view.findViewById(R.id.button_import_file).setOnClickListener(v ->
                 importLauncher.launch(new String[]{"application/json"}));
+
+        view.findViewById(R.id.button_back).setOnClickListener(v ->
+                NavHostFragment.findNavController(this).popBackStack());
 
         view.findViewById(R.id.button_skip_import).setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_importPrompt_to_salary));

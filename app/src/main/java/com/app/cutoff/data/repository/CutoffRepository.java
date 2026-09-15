@@ -57,6 +57,10 @@ public class CutoffRepository {
         return cutoffDao.observeCutoff(id);
     }
 
+    public LiveData<CutoffEntity> observeCurrentCutoff() {
+        return cutoffDao.observeCutoffContainingDay(LocalDate.now().toEpochDay());
+    }
+
     /**
      * Ensures a CutoffEntity exists for the period containing today's date.
      * Safe to call every app launch — it's a no-op if one already exists.

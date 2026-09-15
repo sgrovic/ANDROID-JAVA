@@ -1,37 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
-    android:padding="24dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title_import_prompt"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/message_import_prompt" />
-
-    <Button
-        android:id="@+id/button_import_file"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/action_import_from_file" />
-
-    <Button
-        android:id="@+id/button_skip_import"
-        style="?attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/action_skip_import" />
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="?android:attr/colorBackground">
+<androidx.core.widget.NestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+<ImageButton android:id="@+id/button_back" android:layout_width="48dp" android:layout_height="48dp" android:background="?attr/selectableItemBackgroundBorderless" android:src="@drawable/ic_arrow_back_24" app:tint="?attr/colorOnSurface" android:contentDescription="Back" /><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Step 2 of 6" android:textSize="12sp" android:textColor="?attr/colorOnSurface" android:includeFontPadding="false" android:layout_marginTop="16dp" /><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Start with your budget" android:textSize="24sp" android:textColor="?attr/colorOnSurface" android:includeFontPadding="false" android:layout_marginTop="8dp" /><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Restore a backup or set up from scratch." android:textSize="14sp" android:textColor="?attr/colorOnSurface" android:includeFontPadding="false" android:alpha="0.75" android:layout_marginTop="12dp" android:lineSpacingExtra="3dp" /><LinearLayout android:id="@+id/button_import_file" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="64dp" android:layout_marginTop="24dp" android:background="@drawable/bg_row_item" android:foreground="?attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:orientation="horizontal" android:gravity="center_vertical" android:padding="16dp"><ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_upload" app:tint="?attr/colorPrimary" android:importantForAccessibility="no" /><LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Import backup" android:textSize="16sp" android:textColor="?attr/colorOnSurface" android:includeFontPadding="false"  /><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Choose a Cutoff backup file" android:textSize="14sp" android:textColor="?attr/colorOnSurface" android:includeFontPadding="false" android:alpha="0.75" android:layout_marginTop="12dp" android:lineSpacingExtra="3dp" /></LinearLayout><TextView android:layout_width="24dp" android:layout_height="wrap_content" android:text="›" android:textSize="24sp" android:textColor="?attr/colorOnSurface" android:includeFontPadding="false" android:layout_marginStart="8dp" /></LinearLayout>
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>
+<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingBottom="16dp" android:paddingTop="8dp"><com.google.android.material.button.MaterialButton android:id="@+id/button_skip_import" style="@style/Widget.Cutoff.OnboardingButton" android:layout_width="match_parent" android:layout_height="56dp" android:text="Start fresh" /></LinearLayout>
 </LinearLayout>

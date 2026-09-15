@@ -60,8 +60,29 @@ public class ThemeAdapter extends RecyclerView.Adapter<ThemeAdapter.ThemeViewHol
     public void onBindViewHolder(@NonNull ThemeViewHolder holder, int position) {
         ThemeOption option = options.get(position);
         holder.label.setText(option.label);
-        holder.preview.setImageResource(option.previewDrawableRes);
-        holder.radioButton.setChecked(option.mode.equals(selectedMode));
+        int color;
+        switch (option.mode) {
+            case ThemePreference.MODE_DARK: color = 0xFF151515; break;
+            case ThemePreference.MODE_SAGE: color = 0xFF1B2B22; break;
+            case ThemePreference.MODE_SLATE: color = 0xFF1C1F24; break;
+            case ThemePreference.MODE_YELLOW: color = 0xFFF4D56A; break;
+            default: color = 0xFFFFFFFF;
+        }
+        android.graphics.drawable.GradientDrawable swatch = new android.graphics.drawable.GradientDrawable();
+        swatch.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+        swatch.setColor(color);
+        swatch.setStroke(1, 0xFF808080);
+        holder.preview.setImageDrawable(swatch);
+        String visibleSelection = selectedMode;
+        if (ThemePreference.MODE_SYSTEM.equals(visibleSelection)) {
+            boolean dark = (holder.itemView.getResources().getConfiguration().uiMode
+                    & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                    == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+            visibleSelection = dark ? ThemePreference.MODE_DARK : ThemePreference.MODE_LIGHT;
+        }
+        holder.radioButton.setChecked(option.mode.equals(visibleSelection));
+        holder.itemView.setContentDescription(option.label
+                + (option.mode.equals(visibleSelection) ? ", selected" : ""));
 
         holder.itemView.setOnClickListener(v -> {
             String previousMode = selectedMode;

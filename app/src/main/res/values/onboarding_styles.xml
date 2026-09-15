@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Cutoff.OnboardingButton" parent="Widget.Cutoff.Button">
+        <item name="backgroundTint">?attr/cutoffSoftSurface</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <string name="onboarding_cutoff_explanation">A cutoff covers the 1st–15th or the 16th–last day of the month. Income and bill templates are copied into each new cutoff. You can adjust its income, fixed bills, purchases, and incentives independently. Changes to one cutoff do not affect another.</string>
+</resources>

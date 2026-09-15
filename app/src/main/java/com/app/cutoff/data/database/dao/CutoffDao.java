@@ -25,6 +25,9 @@ public interface CutoffDao {
     @Query("SELECT * FROM cutoff WHERE :epochDay BETWEEN periodStartEpochDay AND periodEndEpochDay LIMIT 1")
     CutoffEntity findCutoffContainingDaySync(long epochDay);
 
+    @Query("SELECT * FROM cutoff WHERE :epochDay BETWEEN periodStartEpochDay AND periodEndEpochDay LIMIT 1")
+    LiveData<CutoffEntity> observeCutoffContainingDay(long epochDay);
+
     @Query("SELECT * FROM cutoff WHERE id = :id")
     LiveData<CutoffEntity> observeCutoff(long id);
 

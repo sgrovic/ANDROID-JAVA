@@ -76,10 +76,9 @@ public class SettingsFragment extends Fragment {
         // Keep the latest salary around so the edit dialog can be pre-filled with it.
         final SalaryEntity[] latestSalary = {null};
         viewModel.getSalary().observe(getViewLifecycleOwner(), salary -> {
-            if (salary == null) return;
             latestSalary[0] = salary;
-            firstHalfValue.setText(CurrencyUtils.format(salary.getFirstToFifteenth()));
-            secondHalfValue.setText(CurrencyUtils.format(salary.getSixteenthToEnd()));
+            firstHalfValue.setText(CurrencyUtils.format(salary == null ? 0 : salary.getFirstToFifteenth()));
+            secondHalfValue.setText(CurrencyUtils.format(salary == null ? 0 : salary.getSixteenthToEnd()));
         });
 
         viewModel.getFixedBillCount().observe(getViewLifecycleOwner(), count ->

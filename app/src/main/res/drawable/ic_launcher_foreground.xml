@@ -3,7 +3,26 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- A minimal calendar split at the monthly cutoff. The small center mark
+         represents the two budget periods without adding lettering. -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,24 L74,24 L74,40 L54,40 Z M34,50 L74,50 L74,84 L34,84 Z"/>
+        android:fillColor="@android:color/transparent"
+        android:pathData="M37,35 C34.8,35 33,36.8 33,39 L33,72 C33,74.2 34.8,76 37,76 L71,76 C73.2,76 75,74.2 75,72 L75,39 C75,36.8 73.2,35 71,35 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M33,46 L75,46 M44,29 L44,40 M64,29 L64,40"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M54,52 L54,70"
+        android:strokeColor="#B3D4BC"
+        android:strokeWidth="4"
+        android:strokeLineCap="round" />
 </vector>

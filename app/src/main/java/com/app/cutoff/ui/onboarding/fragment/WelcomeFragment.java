@@ -30,9 +30,11 @@ public class WelcomeFragment extends Fragment {
                 NavHostFragment.findNavController(this)
                         .navigate(R.id.action_welcome_to_importPrompt));
 
-        // "What's a cutoff?" — informational, could open a bottom sheet or dialog.
-        view.findViewById(R.id.button_what_is_cutoff).setOnClickListener(v -> {
-            // TODO: show an explainer bottom sheet/dialog.
-        });
+        view.findViewById(R.id.button_what_is_cutoff).setOnClickListener(v ->
+                new com.app.cutoff.ui.common.CutoffSheetBuilder(requireContext())
+                        .setTitle("How cutoffs work")
+                        .setMessage(R.string.onboarding_cutoff_explanation)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .create().show());
     }
 }

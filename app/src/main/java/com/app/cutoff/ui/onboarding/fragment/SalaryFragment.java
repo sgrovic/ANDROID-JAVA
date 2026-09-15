@@ -39,6 +39,8 @@ public class SalaryFragment extends Fragment {
 
         if (viewModel.getState().isImported()) {
             view.findViewById(R.id.text_import_badge).setVisibility(View.VISIBLE);
+        }
+        if (viewModel.getState().isImported() || viewModel.getState().getFirstToFifteenth() > 0) {
             inputFirstHalf.setText(formatPrefill(viewModel.getState().getFirstToFifteenth()));
             inputSecondHalf.setText(formatPrefill(viewModel.getState().getSixteenthToEnd()));
         }
