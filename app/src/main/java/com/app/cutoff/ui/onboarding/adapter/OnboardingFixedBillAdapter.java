@@ -48,7 +48,7 @@ public class OnboardingFixedBillAdapter extends RecyclerView.Adapter<OnboardingF
         OnboardingState.DraftFixedBill draft = drafts.get(position);
         holder.name.setText(draft.name);
         holder.amount.setText(CurrencyUtils.format(draft.amount));
-        holder.bank.setText(draft.bank);
+        holder.bank.setText(draft.bank + " · " + recurrenceLabel(draft.recurrenceSchedule));
         BankGradientUtils.apply(holder.itemView, holder.name, holder.amount, holder.bank, holder.removeButton, draft.bank);
         holder.removeButton.setOnClickListener(v -> onRemoveListener.onRemove(draft));
     }
@@ -56,6 +56,12 @@ public class OnboardingFixedBillAdapter extends RecyclerView.Adapter<OnboardingF
     @Override
     public int getItemCount() {
         return drafts.size();
+    }
+
+    private String recurrenceLabel(String recurrenceSchedule) {
+        if (com.app.cutoff.data.database.entity.BillEntity.RECURRENCE_FIRST_CUTOFF.equals(recurrenceSchedule)) return "15th cutoff";
+        if (com.app.cutoff.data.database.entity.BillEntity.RECURRENCE_SECOND_CUTOFF.equals(recurrenceSchedule)) return "30th / month-end";
+        return "Every cutoff";
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

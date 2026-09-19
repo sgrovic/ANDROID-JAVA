@@ -48,7 +48,8 @@ public class BillsAdapter extends ListAdapter<BillEntity, BillsAdapter.ViewHolde
                     return oldItem.getName().equals(newItem.getName())
                             && oldItem.getAmount() == newItem.getAmount()
                             && oldItem.isActive() == newItem.isActive()
-                            && java.util.Objects.equals(oldItem.getBank(), newItem.getBank());
+                            && java.util.Objects.equals(oldItem.getBank(), newItem.getBank())
+                            && oldItem.getRecurrenceSchedule().equals(newItem.getRecurrenceSchedule());
                 }
             };
 
@@ -65,9 +66,15 @@ public class BillsAdapter extends ListAdapter<BillEntity, BillsAdapter.ViewHolde
         BillEntity template = getItem(position);
         holder.name.setText(template.getName());
         holder.amount.setText(CurrencyUtils.format(template.getAmount()));
-        holder.bank.setText(template.getBank());
+        holder.bank.setText(template.getBank() + " · " + recurrenceLabel(template));
         BankGradientUtils.apply(holder.cardBackground, holder.name, holder.amount, holder.bank, holder.menuButton, template.getBank());
         holder.menuButton.setOnClickListener(v -> showMenu(v, template));
+    }
+
+    private String recurrenceLabel(BillEntity bill) {
+        if (BillEntity.RECURRENCE_FIRST_CUTOFF.equals(bill.getRecurrenceSchedule())) return "15th cutoff";
+        if (BillEntity.RECURRENCE_SECOND_CUTOFF.equals(bill.getRecurrenceSchedule())) return "30th / month-end";
+        return "Every cutoff";
     }
 
     private static final int MENU_EDIT = 1;

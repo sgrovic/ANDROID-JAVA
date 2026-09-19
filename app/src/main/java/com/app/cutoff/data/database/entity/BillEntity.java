@@ -1,6 +1,7 @@
 package com.app.cutoff.data.database.entity;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -41,6 +42,11 @@ public class BillEntity {
     public static final String TYPE_FIXED = "FIXED";
     public static final String TYPE_VARIABLE = "VARIABLE";
     public static final String TYPE_INCENTIVE = "INCENTIVE";
+    public static final String PAYMENT_STATUS_PAID = "PAID";
+    public static final String PAYMENT_STATUS_PENDING = "PENDING";
+    public static final String RECURRENCE_FIRST_CUTOFF = "FIRST_CUTOFF";
+    public static final String RECURRENCE_SECOND_CUTOFF = "SECOND_CUTOFF";
+    public static final String RECURRENCE_BOTH_CUTOFFS = "BOTH_CUTOFFS";
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -72,7 +78,15 @@ public class BillEntity {
 
     private boolean active;   // templates: whether it's still copied into new cutoffs
     private boolean paid;     // snapshots/variable: whether the user marked it paid
+    @ColumnInfo(defaultValue = "PENDING")
+    private String paymentStatus = PAYMENT_STATUS_PENDING;
     private int sortOrder;
+
+    /** Which salary cutoff receives this fixed-bill template. Templates from
+     * earlier app versions are treated as every cutoff. */
+    @NonNull
+    @ColumnInfo(defaultValue = "BOTH_CUTOFFS")
+    private String recurrenceSchedule = RECURRENCE_BOTH_CUTOFFS;
 
     @androidx.room.Ignore
     public BillEntity(String type, String name, double amount, @Nullable String iconKey,
@@ -87,6 +101,7 @@ public class BillEntity {
         this.sourceBillId = sourceBillId;
         this.active = active;
         this.paid = paid;
+        this.paymentStatus = paid ? PAYMENT_STATUS_PAID : PAYMENT_STATUS_PENDING;
         this.sortOrder = sortOrder;
         this.bank = com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK;
     }
@@ -184,7 +199,15 @@ public class BillEntity {
     }
 
     public boolean isPaid() {
-        return paid;
+        return PAYMENT_STATUS_PAID.equals(paymentStatus);
+    }
+
+    public String getPaymentStatus() { return paymentStatus == null ? PAYMENT_STATUS_PENDING : paymentStatus; }
+
+    public void setPaymentStatus(String status) {
+        boolean isPaid = PAYMENT_STATUS_PAID.equalsIgnoreCase(status);
+        paymentStatus = isPaid ? PAYMENT_STATUS_PAID : PAYMENT_STATUS_PENDING;
+        paid = isPaid;
     }
 
     public void setPaid(boolean paid) {
@@ -197,5 +220,16 @@ public class BillEntity {
 
     public void setSortOrder(int sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public String getRecurrenceSchedule() {
+        return recurrenceSchedule;
+    }
+
+    public void setRecurrenceSchedule(String recurrenceSchedule) {
+        this.recurrenceSchedule = RECURRENCE_FIRST_CUTOFF.equals(recurrenceSchedule)
+                || RECURRENCE_SECOND_CUTOFF.equals(recurrenceSchedule)
+                || RECURRENCE_BOTH_CUTOFFS.equals(recurrenceSchedule)
+                ? recurrenceSchedule : RECURRENCE_BOTH_CUTOFFS;
     }
 }

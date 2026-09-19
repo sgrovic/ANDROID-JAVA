@@ -47,7 +47,8 @@ public class FixedBillAdapter extends ListAdapter<BillEntity, FixedBillAdapter.V
                 public boolean areContentsTheSame(@NonNull BillEntity oldItem, @NonNull BillEntity newItem) {
                     return oldItem.getName().equals(newItem.getName())
                             && oldItem.getAmount() == newItem.getAmount()
-                            && oldItem.getBank().equals(newItem.getBank());
+                            && oldItem.getBank().equals(newItem.getBank())
+                            && oldItem.getPaymentStatus().equals(newItem.getPaymentStatus());
                 }
             };
 
@@ -64,6 +65,10 @@ public class FixedBillAdapter extends ListAdapter<BillEntity, FixedBillAdapter.V
         BillEntity bill = getItem(position);
         holder.name.setText(bill.getName());
         holder.amount.setText(CurrencyUtils.format(bill.getAmount()));
+        TextView status = holder.itemView.findViewById(R.id.text_bill_status);
+        status.setText(bill.getPaymentStatus());
+        status.setTextColor(android.graphics.Color.parseColor(
+                "PAID".equals(bill.getPaymentStatus()) ? "#9AD9A8" : "#E7D58A"));
         holder.bank.setText(bill.getBank());
         BankGradientUtils.apply(holder.itemView, holder.name, holder.amount, holder.bank, holder.menuButton, bill.getBank());
         holder.menuButton.setOnClickListener(v -> showBillMenu(v, bill));

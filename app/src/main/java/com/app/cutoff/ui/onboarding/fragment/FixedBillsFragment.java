@@ -62,8 +62,8 @@ public class FixedBillsFragment extends Fragment {
 
         view.findViewById(R.id.button_add_fixed_bill).setOnClickListener(v -> {
             AddBillDialog dialog = AddBillDialog.newInstance(AddBillDialog.Mode.FIXED_BILL_TEMPLATE);
-            dialog.setOnBillAddedListener((name, amount, iconKey, bank) -> {
-                viewModel.addFixedBill(name, amount, iconKey, bank);
+            dialog.setOnBillAddedListener((name, amount, iconKey, bank, recurrenceSchedule) -> {
+                viewModel.addFixedBill(name, amount, iconKey, bank, recurrenceSchedule);
                 adapter.notifyDataSetChanged();
             });
             dialog.show(getChildFragmentManager(), "add_fixed_bill");

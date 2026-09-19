@@ -171,14 +171,14 @@ public class CutoffDetailFragment extends Fragment {
 
         view.findViewById(R.id.button_add_fixed_bill).setOnClickListener(v -> {
             AddBillDialog dialog = AddBillDialog.newInstance(AddBillDialog.Mode.FIXED_BILL);
-            dialog.setOnBillAddedListener((name, amount, iconKey, bank) ->
+            dialog.setOnBillAddedListener((name, amount, iconKey, bank, recurrenceSchedule) ->
                     viewModel.addFixedBill(name, String.valueOf(amount), bank));
             dialog.show(getChildFragmentManager(), "add_fixed_bill");
         });
 
         view.findViewById(R.id.button_add_variable_bill).setOnClickListener(v -> {
             AddBillDialog dialog = AddBillDialog.newInstance(AddBillDialog.Mode.VARIABLE_BILL);
-            dialog.setOnBillAddedListener((name, amount, iconKey, bank) ->
+            dialog.setOnBillAddedListener((name, amount, iconKey, bank, recurrenceSchedule) ->
                     viewModel.addVariableBill(name, String.valueOf(amount), bank));
             dialog.show(getChildFragmentManager(), "add_variable_bill");
         });
@@ -196,9 +196,9 @@ public class CutoffDetailFragment extends Fragment {
 
     /** Shared edit flow for fixed bills, variable bills, and incentives alike. */
     private void openEditBillDialog(BillEntity bill) {
-        EditBillDialog dialog = EditBillDialog.newInstance(bill.getId(), bill.getName(), bill.getAmount(), bill.getBank());
+        EditBillDialog dialog = EditBillDialog.newInstance(bill.getId(), bill.getName(), bill.getAmount(), bill.getBank(), bill.getPaymentStatus());
         dialog.setCutoffOnly(true);
-        dialog.setOnBillEditedListener((name, amount, bank) -> {
+        dialog.setOnBillEditedListener((name, amount, bank, paymentStatus, recurrenceSchedule) -> {
             // IMPORTANT: don't mutate `bill` in place — it's the exact instance the
             // adapter's ListAdapter is still holding in its current submitted list.
             // If we edit it directly, DiffUtil.areContentsTheSame() ends up comparing
@@ -212,6 +212,8 @@ public class CutoffDetailFragment extends Fragment {
                     bill.getCutoffId(), bill.getSourceBillId(), bill.isActive(), bill.isPaid(),
                     bill.getSortOrder(), bank);
             updated.setId(bill.getId());
+            updated.setPaymentStatus(paymentStatus);
+            updated.setRecurrenceSchedule(bill.getRecurrenceSchedule());
             viewModel.updateBill(updated);
         });
         dialog.show(getChildFragmentManager(), "edit_bill");

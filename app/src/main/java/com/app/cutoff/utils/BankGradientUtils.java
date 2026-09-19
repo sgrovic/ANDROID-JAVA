@@ -45,9 +45,9 @@ public final class BankGradientUtils {
 
         card.setBackground(new BankRowDrawable(
                 surfaceColor, style.gradientColor, dp(card.getContext(), 16), GRADIENT_END));
-        name.setTextColor(contentColor);
-        amount.setTextColor(contentColor);
-        bank.setTextColor(contentColor);
+        if (name != null) name.setTextColor(contentColor);
+        if (amount != null) amount.setTextColor(contentColor);
+        if (bank != null) bank.setTextColor(contentColor);
 
         TextView logo = card.findViewById(R.id.text_bank_logo);
         if (logo != null) {
@@ -62,8 +62,9 @@ public final class BankGradientUtils {
             logo.setBackground(logoBackground);
         }
 
-        card.setContentDescription(name.getText() + ", " + amount.getText()
-                + ", pay with " + normalize(bankName));
+        card.setContentDescription((name == null ? "" : name.getText())
+                + (amount == null ? "" : ", " + amount.getText())
+                + ", " + normalize(bankName));
 
         if (actionButton instanceof ImageButton) {
             ((ImageButton) actionButton).setColorFilter(contentColor);
@@ -124,9 +125,25 @@ public final class BankGradientUtils {
                 case "MAYA":
                     return new BankStyle("maya", "#087B69", "#FFFFFF", "#18A97F", 9, 0);
                 case "BDO":
-                default:
                     return new BankStyle("BDO", "#173F7A", "#FFE29A", "#245CA2", 11, 0.01f);
+                default:
+                    return customStyle(bankName);
             }
+        }
+
+        private static BankStyle customStyle(String bankName) {
+            String clean = bankName == null ? "" : bankName.trim().replaceAll("\\s+", " ");
+            if (clean.isEmpty()) clean = "BANK";
+            String[] words = clean.split(" ");
+            StringBuilder abbreviation = new StringBuilder();
+            if (words.length > 1) {
+                for (String word : words) if (!word.isEmpty()) abbreviation.append(word.charAt(0));
+            } else {
+                abbreviation.append(clean.length() <= 4 ? clean : clean.substring(0, 3));
+            }
+            String logo = abbreviation.toString().toUpperCase(Locale.US);
+            float size = logo.length() <= 3 ? 12 : (logo.length() <= 5 ? 10 : 8);
+            return new BankStyle(logo, "#455A64", "#FFFFFF", "#607D8B", size, 0.01f);
         }
     }
 

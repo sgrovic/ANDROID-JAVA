@@ -3,6 +3,8 @@ plugins {
     id 'com.google.dagger.hilt.android'
 }
 
+def appVersionName = "2.29"
+
 android {
     namespace 'com.app.cutoff'
     compileSdk 34
@@ -11,8 +13,9 @@ android {
         applicationId "com.app.cutoff"
         minSdk 24
         targetSdk 34
-        versionCode 1
-        versionName "2.04"
+        // Increment both values for every user-visible feature release.
+        versionCode 8
+        versionName appVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,6 +42,15 @@ android {
 
     buildFeatures {
         viewBinding true
+    }
+}
+
+// Keeps shareable APKs easy to identify without exposing the internal package name.
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("budget-cutoff-v${appVersionName}.apk")
+        }
     }
 }
 
@@ -78,3 +90,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }
+
+

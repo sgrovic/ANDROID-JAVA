@@ -84,7 +84,11 @@ public class OnboardingViewModel extends ViewModel {
     }
 
     public void addFixedBill(String name, double amount, String iconKey, String bank) {
-        state.addDraftFixedBill(new OnboardingState.DraftFixedBill(name, amount, iconKey, bank));
+        addFixedBill(name, amount, iconKey, bank, com.app.cutoff.data.database.entity.BillEntity.RECURRENCE_BOTH_CUTOFFS);
+    }
+
+    public void addFixedBill(String name, double amount, String iconKey, String bank, String recurrenceSchedule) {
+        state.addDraftFixedBill(new OnboardingState.DraftFixedBill(name, amount, iconKey, bank, recurrenceSchedule));
     }
 
     public void removeFixedBill(OnboardingState.DraftFixedBill bill) {
@@ -135,7 +139,7 @@ public class OnboardingViewModel extends ViewModel {
 
             int sortOrder = 0;
             for (OnboardingState.DraftFixedBill draft : state.getDraftFixedBills()) {
-                billRepository.addFixedBillTemplate(draft.name, draft.amount, draft.iconKey, sortOrder++, draft.bank);
+                billRepository.addFixedBillTemplate(draft.name, draft.amount, draft.iconKey, sortOrder++, draft.bank, draft.recurrenceSchedule);
             }
 
             settingsRepository.setOnboardingComplete(true);

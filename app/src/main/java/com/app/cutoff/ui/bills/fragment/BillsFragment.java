@@ -48,11 +48,12 @@ public class BillsFragment extends Fragment {
         BillsAdapter adapter = new BillsAdapter(new BillsAdapter.OnTemplateActionListener() {
             @Override
             public void onEdit(BillEntity template) {
-                EditBillDialog dialog = EditBillDialog.newInstance(template.getId(), template.getName(), template.getAmount(), template.getBank());
-                dialog.setOnBillEditedListener((name, amount, bank) -> {
+                EditBillDialog dialog = EditBillDialog.newTemplateInstance(template.getId(), template.getName(), template.getAmount(), template.getBank(), template.getRecurrenceSchedule());
+                dialog.setOnBillEditedListener((name, amount, bank, paymentStatus, recurrenceSchedule) -> {
                     template.setName(name);
                     template.setAmount(amount);
                     template.setBank(bank);
+                    template.setRecurrenceSchedule(recurrenceSchedule);
                     viewModel.updateFixedBillTemplate(template);
                 });
                 dialog.show(getChildFragmentManager(), "edit_fixed_bill");
@@ -74,8 +75,8 @@ public class BillsFragment extends Fragment {
 
         view.findViewById(R.id.button_add_fixed_bill).setOnClickListener(v -> {
             AddBillDialog dialog = AddBillDialog.newInstance(AddBillDialog.Mode.FIXED_BILL_TEMPLATE);
-            dialog.setOnBillAddedListener((name, amount, iconKey, bank) ->
-                    viewModel.addFixedBillTemplate(name, String.valueOf(amount), iconKey, 0, bank));
+            dialog.setOnBillAddedListener((name, amount, iconKey, bank, recurrenceSchedule) ->
+                    viewModel.addFixedBillTemplate(name, String.valueOf(amount), iconKey, 0, bank, recurrenceSchedule));
             dialog.show(getChildFragmentManager(), "add_fixed_bill");
         });
 

@@ -41,19 +41,19 @@ public class BillRepository {
     }
 
     public long addFixedBillTemplate(String name, double amount, String iconKey, int sortOrder) {
-        BillEntity template = new BillEntity(
-                BillEntity.TYPE_FIXED, name, amount, iconKey,
-                /*isTemplate=*/ true, /*cutoffId=*/ null, /*sourceBillId=*/ null,
-                /*active=*/ true, /*paid=*/ false, sortOrder);
-        return billDao.insert(template);
+        return addFixedBillTemplate(name, amount, iconKey, sortOrder,
+                com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK,
+                BillEntity.RECURRENCE_BOTH_CUTOFFS);
     }
 
 
-    public long addFixedBillTemplate(String name, double amount, String iconKey, int sortOrder, String bank) {
+    public long addFixedBillTemplate(String name, double amount, String iconKey, int sortOrder, String bank,
+                                     String recurrenceSchedule) {
         BillEntity template = new BillEntity(
                 BillEntity.TYPE_FIXED, name, amount, iconKey,
                 /*isTemplate=*/ true, /*cutoffId=*/ null, /*sourceBillId=*/ null,
                 /*active=*/ true, /*paid=*/ false, sortOrder, bank);
+        template.setRecurrenceSchedule(recurrenceSchedule);
         long templateId = billDao.insert(template);
         template.setId(templateId);
 
@@ -74,13 +74,22 @@ public class BillRepository {
         List<BillEntity> snapshots = billDao.getFutureFixedSnapshotsForTemplateSync(
                 template.getId(), todayEpochDay);
         for (BillEntity snapshot : snapshots) {
+            CutoffEntity cutoff = cutoffDao.getCutoffSync(snapshot.getCutoffId());
+            if (cutoff == null || !belongsInCutoff(template, cutoff)) {
+                billDao.delete(snapshot);
+                continue;
+            }
             snapshot.setName(template.getName());
             snapshot.setAmount(template.getAmount());
             snapshot.setIconKey(template.getIconKey());
             snapshot.setBank(template.getBank());
             snapshot.setSortOrder(template.getSortOrder());
+            snapshot.setRecurrenceSchedule(template.getRecurrenceSchedule());
             billDao.update(snapshot);
         }
+        // A schedule may now include a future cutoff that did not previously
+        // have this bill. Add only the missing snapshots.
+        copyTemplateIntoFutureCutoffs(template);
     }
 
     public void deleteFixedBillTemplate(BillEntity template) {
@@ -184,12 +193,13 @@ public class BillRepository {
                 }
             }
 
-            if (!alreadyExists) {
+            if (!alreadyExists && belongsInCutoff(template, cutoff)) {
                 BillEntity snapshot = new BillEntity(
                         BillEntity.TYPE_FIXED, template.getName(), template.getAmount(),
                         template.getIconKey(), /*isTemplate=*/ false, cutoff.getId(),
                         template.getId(), /*active=*/ true, /*paid=*/ false,
                         template.getSortOrder(), template.getBank());
+                snapshot.setRecurrenceSchedule(template.getRecurrenceSchedule());
                 billDao.insert(snapshot);
             }
         }
@@ -198,11 +208,23 @@ public class BillRepository {
     void copyActiveTemplatesIntoCutoff(long cutoffId) {
         List<BillEntity> templates = billDao.getActiveFixedBillTemplatesSync();
         for (BillEntity template : templates) {
+            CutoffEntity cutoff = cutoffDao.getCutoffSync(cutoffId);
+            if (cutoff == null || !belongsInCutoff(template, cutoff)) continue;
             BillEntity snapshot = new BillEntity(
                     BillEntity.TYPE_FIXED, template.getName(), template.getAmount(),
                     template.getIconKey(), /*isTemplate=*/ false, cutoffId, template.getId(),
                     /*active=*/ true, /*paid=*/ false, template.getSortOrder(), template.getBank());
+            snapshot.setRecurrenceSchedule(template.getRecurrenceSchedule());
             billDao.insert(snapshot);
         }
+    }
+
+    private boolean belongsInCutoff(BillEntity template, CutoffEntity cutoff) {
+        boolean firstCutoff = java.time.LocalDate.ofEpochDay(cutoff.getPeriodEndEpochDay())
+                .getDayOfMonth() == com.app.cutoff.utils.DateUtils.SPLIT_DAY;
+        String schedule = template.getRecurrenceSchedule();
+        return BillEntity.RECURRENCE_BOTH_CUTOFFS.equals(schedule)
+                || (firstCutoff && BillEntity.RECURRENCE_FIRST_CUTOFF.equals(schedule))
+                || (!firstCutoff && BillEntity.RECURRENCE_SECOND_CUTOFF.equals(schedule));
     }
 }

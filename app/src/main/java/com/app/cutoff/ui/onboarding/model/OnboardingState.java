@@ -17,17 +17,23 @@ public class OnboardingState {
         public double amount;
         public String iconKey;
         public String bank;
+        public String recurrenceSchedule;
 
         public DraftFixedBill(String name, double amount, String iconKey) {
             this(name, amount, iconKey, com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK);
         }
 
         public DraftFixedBill(String name, double amount, String iconKey, String bank) {
+            this(name, amount, iconKey, bank, com.app.cutoff.data.database.entity.BillEntity.RECURRENCE_BOTH_CUTOFFS);
+        }
+
+        public DraftFixedBill(String name, double amount, String iconKey, String bank, String recurrenceSchedule) {
             this.name = name;
             this.amount = amount;
             this.iconKey = iconKey;
             this.bank = (bank == null || bank.trim().isEmpty())
                     ? com.app.cutoff.utils.Constants.DEFAULT_BILL_BANK : bank;
+            this.recurrenceSchedule = recurrenceSchedule;
         }
     }
 

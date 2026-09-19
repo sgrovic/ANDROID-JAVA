@@ -88,6 +88,8 @@ public class SettingsFragment extends Fragment {
 
         view.findViewById(R.id.row_fixed_bills).setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_settings_to_fixedBills));
+        view.findViewById(R.id.row_bank_templates).setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.action_settings_to_bankTemplates));
 
         view.findViewById(R.id.row_salary).setOnClickListener(v -> showEditSalaryDialog(latestSalary[0]));
 

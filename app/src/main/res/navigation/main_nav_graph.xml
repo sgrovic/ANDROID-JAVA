@@ -20,6 +20,7 @@
         <action
             android:id="@+id/action_settings_to_fixedBills"
             app:destination="@id/billsFragment" />
+        <action android:id="@+id/action_settings_to_bankTemplates" app:destination="@id/bankTemplatesFragment" />
     </fragment>
 
     <fragment
@@ -35,5 +36,7 @@
         android:id="@+id/billsFragment"
         android:name="com.app.cutoff.ui.bills.fragment.BillsFragment"
         android:label="Fixed bills" />
+
+    <fragment android:id="@+id/bankTemplatesFragment" android:name="com.app.cutoff.ui.settings.fragment.BankSettingsFragment" android:label="Bank templates" />
 
 </navigation>

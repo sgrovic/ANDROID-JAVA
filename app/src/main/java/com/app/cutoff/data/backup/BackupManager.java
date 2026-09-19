@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public final class BackupManager {
 
-    public static final int CURRENT_VERSION = 2;
+    public static final int CURRENT_VERSION = 3;
 
     private static final String KEY_VERSION = "version";
     private static final String KEY_EXPORTED_AT = "exportedAtEpochMillis";
@@ -49,6 +49,7 @@ public final class BackupManager {
     private static final String KEY_BILL_PAID = "paid";
     private static final String KEY_BILL_SORT_ORDER = "sortOrder";
     private static final String KEY_BILL_SOURCE_BILL_ID = "sourceBillId";
+    private static final String KEY_BILL_RECURRENCE_SCHEDULE = "recurrenceSchedule";
 
     private static final String KEY_CUTOFF_ID = "id";
     private static final String KEY_CUTOFF_PERIOD_START = "periodStartEpochDay";
@@ -124,6 +125,7 @@ public final class BackupManager {
         json.put(KEY_BILL_ACTIVE, bill.isActive());
         json.put(KEY_BILL_PAID, bill.isPaid());
         json.put(KEY_BILL_SORT_ORDER, bill.getSortOrder());
+        json.put(KEY_BILL_RECURRENCE_SCHEDULE, bill.getRecurrenceSchedule());
         if (bill.getSourceBillId() != null) {
             json.put(KEY_BILL_SOURCE_BILL_ID, bill.getSourceBillId());
         }
@@ -210,6 +212,8 @@ public final class BackupManager {
                 json.optBoolean(KEY_BILL_PAID, false),
                 json.optInt(KEY_BILL_SORT_ORDER, 0), bank);
         bill.setId(json.getLong(KEY_BILL_ID));
+        bill.setRecurrenceSchedule(json.optString(KEY_BILL_RECURRENCE_SCHEDULE,
+                BillEntity.RECURRENCE_BOTH_CUTOFFS));
         return bill;
     }
 
