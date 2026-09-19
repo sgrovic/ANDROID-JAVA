@@ -8,6 +8,8 @@ import com.app.cutoff.data.database.AppDatabase;
 import com.app.cutoff.data.database.dao.BillDao;
 import com.app.cutoff.data.database.dao.CutoffDao;
 import com.app.cutoff.data.database.dao.SalaryDao;
+import com.app.cutoff.data.database.dao.PlannedItemDao;
+import com.app.cutoff.data.database.dao.BudgetProjectDao;
 
 import javax.inject.Singleton;
 
@@ -31,7 +33,9 @@ public class AppModule {
     @Singleton
     public AppDatabase provideAppDatabase(@ApplicationContext Context context) {
         return Room.databaseBuilder(context, AppDatabase.class, AppDatabase.DATABASE_NAME)
-                .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3, AppDatabase.MIGRATION_3_4)
+                .addMigrations(AppDatabase.MIGRATION_1_2, AppDatabase.MIGRATION_2_3,
+                        AppDatabase.MIGRATION_3_4, AppDatabase.MIGRATION_4_5,
+                        AppDatabase.MIGRATION_5_6, AppDatabase.MIGRATION_6_7)
                 .build();
     }
 
@@ -52,6 +56,8 @@ public class AppModule {
     public CutoffDao provideCutoffDao(AppDatabase db) {
         return db.cutoffDao();
     }
+    @Provides @Singleton public PlannedItemDao providePlannedItemDao(AppDatabase db) { return db.plannedItemDao(); }
+    @Provides @Singleton public BudgetProjectDao provideBudgetProjectDao(AppDatabase db) { return db.budgetProjectDao(); }
 
     @Provides
     @Singleton

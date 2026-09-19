@@ -22,6 +22,12 @@
             app:destination="@id/billsFragment" />
         <action android:id="@+id/action_settings_to_bankTemplates" app:destination="@id/bankTemplatesFragment" />
     </fragment>
+    <fragment android:id="@+id/projectFragment" android:name="com.app.cutoff.ui.project.ProjectFragment" android:label="Budget Projects">
+        <action android:id="@+id/action_project_to_projectDetail" app:destination="@id/projectDetailFragment" />
+    </fragment>
+    <fragment android:id="@+id/projectDetailFragment" android:name="com.app.cutoff.ui.project.ProjectDetailFragment" android:label="Budget Project">
+        <argument android:name="arg_project_id" app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/cutoffDetailFragment"

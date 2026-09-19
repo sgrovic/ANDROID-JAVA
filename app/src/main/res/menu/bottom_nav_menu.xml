@@ -4,6 +4,7 @@
         android:id="@+id/homeFragment"
         android:icon="@drawable/ic_home"
         android:title="@string/nav_home" />
+    <item android:id="@+id/projectFragment" android:icon="@drawable/ic_calculator_24" android:title="Project" />
     <item
         android:id="@+id/settingsFragment"
         android:icon="@drawable/baseline_settings_24"

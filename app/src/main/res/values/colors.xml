@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="project_negative">#E87575</color>
+    <color name="project_default">#9AD9A8</color>
     <!-- Brand -->
     <color name="cutoff_brand">#365C46</color>
     <color name="cutoff_brand_dark">#294735</color>

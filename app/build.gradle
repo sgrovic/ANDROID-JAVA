@@ -3,7 +3,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
 }
 
-def appVersionName = "2.29"
+def appVersionName = "2.62"
 
 android {
     namespace 'com.app.cutoff'
@@ -14,7 +14,7 @@ android {
         minSdk 24
         targetSdk 34
         // Increment both values for every user-visible feature release.
-        versionCode 8
+        versionCode 14
         versionName appVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

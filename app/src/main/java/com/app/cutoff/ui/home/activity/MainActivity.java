@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                if (destination.getId() == R.id.homeFragment || destination.getId() == R.id.settingsFragment) {
+                if (destination.getId() == R.id.homeFragment || destination.getId() == R.id.settingsFragment || destination.getId() == R.id.projectFragment) {
                     bottomNav.setSelectedItemId(destination.getId());
                 }
             });

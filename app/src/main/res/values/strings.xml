@@ -10,6 +10,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
+    <string name="action_apply_optimization">Apply optimization</string>
 
     <string name="title_add_fixed_bill">Add fixed bill</string>
     <string name="title_add_variable_bill">Add variable bill</string>

@@ -11,10 +11,15 @@ import com.app.cutoff.data.database.dao.SalaryDao;
 import com.app.cutoff.data.database.entity.BillEntity;
 import com.app.cutoff.data.database.entity.CutoffEntity;
 import com.app.cutoff.data.database.entity.SalaryEntity;
+import com.app.cutoff.data.database.entity.PlannedItemEntity;
+import com.app.cutoff.data.database.dao.PlannedItemDao;
+import com.app.cutoff.data.database.dao.BudgetProjectDao;
+import com.app.cutoff.data.database.entity.BudgetProjectEntity;
 
 @Database(
-        entities = {BillEntity.class, CutoffEntity.class, SalaryEntity.class},
-        version = 4,
+        entities = {BillEntity.class, CutoffEntity.class, SalaryEntity.class,
+                PlannedItemEntity.class, BudgetProjectEntity.class},
+        version = 7,
         exportSchema = true
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -43,6 +48,33 @@ public abstract class AppDatabase extends RoomDatabase {
             db.execSQL("ALTER TABLE bill ADD COLUMN recurrenceSchedule TEXT NOT NULL DEFAULT 'BOTH_CUTOFFS'");
         }
     };
+    public static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS planned_item (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, totalAmount REAL NOT NULL, monthsToPay INTEGER NOT NULL, applyFirstCutoff INTEGER NOT NULL, applySecondCutoff INTEGER NOT NULL)");
+        }
+    };
+    /** Adds independent projects and places legacy planned items in one default project. */
+    public static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS budget_project (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, targetAmount REAL NOT NULL, savedAmount REAL NOT NULL, createdAtEpochDay INTEGER NOT NULL)");
+            db.execSQL("INSERT INTO budget_project (id, name, targetAmount, savedAmount, createdAtEpochDay) "
+                    + "SELECT 1, 'My Project', CASE WHEN SUM(totalAmount) > 0 THEN SUM(totalAmount) ELSE 1 END, 0, 0 "
+                    + "FROM planned_item HAVING COUNT(*) > 0");
+            db.execSQL("CREATE TABLE IF NOT EXISTS planned_item_new (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT, totalAmount REAL NOT NULL, monthsToPay INTEGER NOT NULL, applyFirstCutoff INTEGER NOT NULL, applySecondCutoff INTEGER NOT NULL, projectId INTEGER NOT NULL, FOREIGN KEY(projectId) REFERENCES budget_project(id) ON UPDATE NO ACTION ON DELETE CASCADE)");
+            db.execSQL("INSERT INTO planned_item_new (id, name, totalAmount, monthsToPay, applyFirstCutoff, applySecondCutoff, projectId) SELECT id, name, totalAmount, monthsToPay, applyFirstCutoff, applySecondCutoff, 1 FROM planned_item");
+            db.execSQL("DROP TABLE planned_item");
+            db.execSQL("ALTER TABLE planned_item_new RENAME TO planned_item");
+            db.execSQL("CREATE INDEX IF NOT EXISTS index_planned_item_projectId ON planned_item(projectId)");
+        }
+    };
+    /** Stores the selected contribution split. Existing rows retain their old behavior. */
+    public static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE planned_item ADD COLUMN firstCutoffPercent INTEGER NOT NULL DEFAULT 50");
+            db.execSQL("UPDATE planned_item SET firstCutoffPercent = 100 WHERE applyFirstCutoff = 1 AND applySecondCutoff = 0");
+            db.execSQL("UPDATE planned_item SET firstCutoffPercent = 0 WHERE applyFirstCutoff = 0 AND applySecondCutoff = 1");
+        }
+    };
 
     public static final String DATABASE_NAME = "cutoff.db";
 
@@ -51,4 +83,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract SalaryDao salaryDao();
 
     public abstract CutoffDao cutoffDao();
+    public abstract PlannedItemDao plannedItemDao();
+    public abstract BudgetProjectDao budgetProjectDao();
 }
